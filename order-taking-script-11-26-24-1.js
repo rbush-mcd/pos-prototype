@@ -470,6 +470,20 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', function() {
             const itemName = this.closest('.item-customization').getAttribute('data-name');
             console.log(`"make-meal" button clicked for item: ${itemName}`);
+            
+            // Get the current amount of the item
+            const correspondingCartItem = document.querySelector(`.cart-list .cart-item[data-cart-item="${itemName}"]`);
+            const amountElement = correspondingCartItem.querySelector('[data-cart-amount]');
+            const currentAmount = amountElement ? parseInt(amountElement.getAttribute('amount'), 10) : 1;
+    
+            // Set the amount in the Tab 2 quantity-control
+            const quantityControlAmountElementTab2 = document.querySelector(`#drink-selection .customization-content[data-cart-customization-content="${itemName}"] .quantity-control .amount`);
+            if (quantityControlAmountElementTab2) {
+                quantityControlAmountElementTab2.setAttribute('amount', currentAmount);
+                quantityControlAmountElementTab2.textContent = currentAmount;
+                console.log('Updated quantity control amount for Tab 2:', currentAmount);
+            }
+    
             itemTabState[itemName] = 1; // Store the tab state as tab 2 (index 1)
             switchTab(1); // Switch to tab 2 (index 1)
         });
