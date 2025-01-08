@@ -426,14 +426,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Event listener for the "make-meal" button
-    document.querySelectorAll('#make-meal').forEach(button => {
-        button.addEventListener('click', function() {
-            const itemName = this.closest('.item-customization').getAttribute('data-name');
-            console.log(`"make-meal" button clicked for item: ${itemName}`);
+    function makeItAMeal(event) {
+        var cartItem = event.currentTarget.getAttribute('data-cart-item');
+        if(!cartItem) {
+            cartItem = event.currentTarget.getAttribute('data-name');
+        }
+        const itemName = event.currentTarget.getAttribute('data-name');
+        
+            console.log(`"make-meal" button clicked for item: ${cartItem}`);
 
             // Get the current amount of the item
-            const correspondingCartItem = document.querySelector(`.cart-list .cart-item[data-cart-item="${itemName}"]`);
+            const correspondingCartItem = document.querySelector(`.cart-list .cart-item[data-cart-item="${cartItem}"]`);
             const amountElement = correspondingCartItem.querySelector('[data-cart-amount]');
             const currentAmount = amountElement ? parseInt(amountElement.getAttribute('amount'), 10) : 1;
 
@@ -449,7 +452,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const mealInfoSection = correspondingCartItem.querySelector('.meal-info');
             if (mealInfoSection) {
                 mealInfoSection.style.display = 'flex';
-                console.log('Displayed meal-info section for item:', itemName);
+                console.log('Displayed meal-info section for item:', cartItem);
 
                 // Set the amount for sub-cart-item elements
                 const subCartItems = mealInfoSection.querySelectorAll('.sub-cart-item .order-item-quantity.is--small');
@@ -473,22 +476,28 @@ document.addEventListener('DOMContentLoaded', function() {
             const mealTagElement = correspondingCartItem.querySelector('.cart-item-info .item-content .order-item-price-container .meal-tag');
             if (mealTagElement) {
                 mealTagElement.style.display = 'block';
-                console.log('Displayed meal-tag element for item:', itemName);
+                console.log('Displayed meal-tag element for item:', cartItem);
             }
 
             // Set default size control button
             setDefaultSizeControl();
 
             // Restore the saved state of the size control buttons
-            const customization = customizationData[itemName] || loadCustomizationState(itemName) || {};
+            const customization = customizationData[cartItem] || loadCustomizationState(cartItem) || {};
             const selectedSize = customization.selectedSize || 'M';
-            const sizeControlButton = document.querySelector(`.customization-content[data-cart-customization-content="${itemName}"] .button.is--size-control[data-size="${selectedSize}"]`);
+            const sizeControlButton = document.querySelector(`.customization-content[data-cart-customization-content="${cartItem}"] .button.is--size-control[data-size="${selectedSize}"]`);
             if (sizeControlButton) {
                 sizeControlButton.classList.add('focused');
             }
 
-            itemTabState[itemName] = 1; // Store the tab state as tab 2 (index 1)
+            itemTabState[cartItem] = 1; // Store the tab state as tab 2 (index 1)
             switchTab(1); // Switch to tab 2 (index 1)
+    }
+    
+    // Event listener for the "make-meal" button
+    document.querySelectorAll('#make-meal').forEach(button => {
+        button.addEventListener('click', function(event) {
+            makeItAMeal(event);
         });
     });
 
@@ -971,6 +980,33 @@ document.addEventListener('DOMContentLoaded', function() {
             newCustomizationContent.setAttribute('data-cart-customization-content', uniqueId);
             document.querySelector('.customization-list').appendChild(newCustomizationContent);
         }
+
+        //Clone the meal item selections
+        const mealItemSelectionContent = document.querySelector(`#drink-selection .customization-wrapper .customization-content[data-cart-customization-content="${originalCartItem.getAttribute('data-cart-item')}"]`);
+        if (mealItemSelectionContent) {
+            const newMealItemSelectionContent = mealItemSelectionContent.cloneNode(true);
+            newMealItemSelectionContent.setAttribute('data-cart-customization-content', uniqueId);
+            document.querySelector('#drink-selection .customization-wrapper .customization-list').appendChild(newMealItemSelectionContent);
+        }
+
+        const reviewItemCustomization = document.querySelector(`#meal-review .customization-section .item-customization[data-cart-customization="${originalCartItem.getAttribute('data-cart-item')}"]`);
+        if (reviewItemCustomization) {
+            const newReviewItemCustomization = reviewItemCustomization.cloneNode(true);
+            newReviewItemCustomization.setAttribute('data-cart-customization', uniqueId);
+            newReviewItemCustomization.setAttribute('data-name', uniqueId);
+            newReviewItemCustomization.setAttribute('data-cart-customization-content', uniqueId);
+            document.querySelector('#meal-review .customization-section .item-customization-list').appendChild(newReviewItemCustomization);
+        }
+
+        const reviewCustomizationContent = document.querySelector(`#meal-review .customization-wrapper .customization-content[data-cart-customization-content="${originalCartItem.getAttribute('data-cart-item')}"]`);
+        if (reviewCustomizationContent) {
+            const newReviewCustomizationContent = reviewCustomizationContent.cloneNode(true);
+            newReviewCustomizationContent.setAttribute('data-cart-customization', uniqueId);
+            newReviewCustomizationContent.setAttribute('data-name', uniqueId);
+            newReviewCustomizationContent.setAttribute('data-cart-customization-content', uniqueId);
+            document.querySelector('#meal-review .customization-wrapper .customization-list').appendChild(newReviewCustomizationContent);
+        }
+        
         // Reset customization states for the original item
         const originalCustomizationIngredients = document.querySelectorAll(`.customization-content[data-cart-customization-content="${originalCartItem.getAttribute('data-cart-item')}"] .customization-ingredient`);
         originalCustomizationIngredients.forEach(ingredient => {
@@ -999,6 +1035,14 @@ document.addEventListener('DOMContentLoaded', function() {
             mealItemDescription.textContent = customizationText;
             mealItemDescription.style.display = 'block';
         }
+
+        var makeMealButton = $('[data-cart-customization="' + uniqueId +'"] #make-meal').get(0);
+        var deleteButton = $('[data-cart-customization="' + uniqueId +'"] #remove-button').get(0);
+        $(makeMealButton).attr('data-cart-customization', uniqueId);
+        $(makeMealButton).attr('data-cart-item', uniqueId);
+        $(deleteButton).attr('data-cart-customization', uniqueId);
+        $(deleteButton).attr('data-cart-item', uniqueId);
+        $(makeMealButton).on('click', function(event) { makeItAMeal(event) });
     }
 
     // Function to update item description based on customization ingredient click
