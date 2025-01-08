@@ -1198,7 +1198,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initial setup
     addMealItemContentListeners();
-
+    
     // Function to remove the selected item from the cart and reset customizations
     function removeSelectedItem() {
         if (!selectedItemName) {
