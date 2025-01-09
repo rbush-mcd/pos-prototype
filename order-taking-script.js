@@ -1167,15 +1167,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Function to switch tabs and show customization content
-    function switchTab(tabId) {
-        console.log(`Switching to tab: ${tabId}`);
-        document.querySelectorAll('.customization-step').forEach(tab => {
-            tab.style.display = tab.id === tabId ? 'block' : 'none';
-            console.log(`Tab ${tab.id} display: ${tab.style.display}`);
-        });
-    }
-
     // Function to update the customization panel for the selected item
     function updateCustomizationPanel(itemName) {
         console.log(`Updating customization panel for item: ${itemName}`);
