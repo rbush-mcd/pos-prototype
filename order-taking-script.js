@@ -1167,13 +1167,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Function to switch tabs and show customization content using data-w-tab attribute
-    function switchTab(tabName) {
-        console.log(`Switching to tab: ${tabName}`);
+    // Function to switch tabs and show customization content
+    function switchTab(tabId) {
+        console.log(`Switching to tab: ${tabId}`);
         document.querySelectorAll('.customization-step').forEach(tab => {
-            const isActive = tab.getAttribute('data-w-tab') === tabName;
-            tab.style.display = isActive ? 'block' : 'none';
-            console.log(`Tab ${tab.getAttribute('data-w-tab')} display: ${tab.style.display}`);
+            tab.style.display = tab.id === tabId ? 'block' : 'none';
+            console.log(`Tab ${tab.id} display: ${tab.style.display}`);
         });
     }
 
@@ -1189,7 +1188,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         // Add any additional logic to populate the customization panel
     }
-
+    
     // Function to update the sub-item customization panel for the selected item
     function updateSubItemCustomizationPanel(itemName) {
         console.log(`Updating sub-item customization panel for item: ${itemName}`);
@@ -1226,7 +1225,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.meal-item .is--meal-side .item-content').forEach(item => {
         item.addEventListener('click', function() {
             console.log(`.meal-item .is--meal-side .item-content clicked, navigating to sub-item-customization for item: French Fries&&&&&`);
-            switchTab('Happy Meal Toy Selection');
+            switchTab('sub-item-customization');
             updateSubItemCustomizationPanel('French Fries&&&&&');
         });
     });
@@ -1236,11 +1235,11 @@ document.addEventListener('DOMContentLoaded', function() {
         item.addEventListener('click', function() {
             const drinkId = this.closest('.cart-item').getAttribute('data-drink-id');
             console.log(`#meal-item-drink .item-content clicked, navigating to sub-item-customization for drinkId: ${drinkId}`);
-            switchTab('Happy Meal Toy Selection');
+            switchTab('sub-item-customization');
             updateSubItemCustomizationPanel(drinkId);
         });
     });
-    
+        
     // Function to remove the selected item from the cart and reset customizations
     function removeSelectedItem() {
         if (!selectedItemName) {
