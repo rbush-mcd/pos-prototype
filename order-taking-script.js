@@ -1168,80 +1168,77 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Function to switch tabs and show customization content
-    function switchToCustomizationStep(tabId, itemName) {
-        switchTab(3); // Switch to the item-customization tab
-        hideAllCustomizationContents();
+    function switchTab(tabId) {
+        console.log(`Switching to tab: ${tabId}`);
+        document.querySelectorAll('.customization-step').forEach(tab => {
+            tab.style.display = tab.id === tabId ? 'block' : 'none';
+            console.log(`Tab ${tab.id} display: ${tab.style.display}`);
+        });
+    }
+
+    // Function to update the customization panel for the selected item
+    function updateCustomizationPanel(itemName) {
+        console.log(`Updating customization panel for item: ${itemName}`);
         const customizationContent = document.querySelector(`.customization-content[data-cart-customization-content="${itemName}"]`);
         if (customizationContent) {
-            customizationContent.style.display = 'flex';
-            console.log(`Showing customization content for ${itemName} in tab ${tabId}`);
+            customizationContent.style.display = 'block';
+            console.log(`Displayed customization content for item: ${itemName}`);
         } else {
-            console.log(`No customization content found for ${itemName} in tab ${tabId}`);
+            console.log(`No customization content found for item: ${itemName}`);
         }
+        // Add any additional logic to populate the customization panel
     }
 
-    // Function to switch to sub-item-customization tab and show content
-    function switchToSubItemCustomization(mainItemName, subItemName) {
-        switchTab(5); // Assuming tab index 5 corresponds to #sub-item-customization
-        hideAllCustomizationContents();
-        const mainCustomizationContent = document.querySelector(`.customization-content[data-cart-customization-content="${mainItemName}"]`);
-        const subCustomizationContent = document.querySelector(`.item-customization[data-cart-customization="${subItemName}"]`);
-        if (mainCustomizationContent) {
-            mainCustomizationContent.style.display = 'flex';
-            console.log(`Showing main customization content for ${mainItemName} in sub-item-customization tab`);
+    // Function to update the sub-item customization panel for the selected item
+    function updateSubItemCustomizationPanel(itemName) {
+        console.log(`Updating sub-item customization panel for item: ${itemName}`);
+        const primaryCustomizationContent = document.querySelector(`.customization-content[data-cart-customization-content="${itemName}"]`);
+        const subItemCustomizationContent = document.querySelector(`.item-customization[data-cart-customization="${itemName}"]`);
+        
+        if (primaryCustomizationContent) {
+            primaryCustomizationContent.style.display = 'block';
+            console.log(`Displayed primary customization content for item: ${itemName}`);
         } else {
-            console.log(`No main customization content found for ${mainItemName} in sub-item-customization tab`);
+            console.log(`No primary customization content found for item: ${itemName}`);
         }
-        if (subCustomizationContent) {
-            subCustomizationContent.style.display = 'block';
-            console.log(`Showing sub customization content for ${subItemName} in sub-item-customization tab`);
+        
+        if (subItemCustomizationContent) {
+            subItemCustomizationContent.style.display = 'block';
+            console.log(`Displayed sub-item customization content for item: ${itemName}`);
         } else {
-            console.log(`No sub customization content found for ${subItemName} in sub-item-customization tab`);
+            console.log(`No sub-item customization content found for item: ${itemName}`);
         }
+        // Add any additional logic to populate the sub-item customization panel
     }
 
-    // Function to handle meal item content click
-    function handleMealItemContentClick(event) {
-        const itemContent = event.target.closest('.item-content');
-        if (!itemContent) return;
+    // Event listener for .meal-item click to navigate to item-customization tab
+    document.querySelectorAll('.meal-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const itemName = this.getAttribute('data-cart-item');
+            console.log(`.meal-item clicked, navigating to item-customization for item: ${itemName}`);
+            switchTab('item-customization');
+            updateCustomizationPanel(itemName);
+        });
+    });
 
-        const mealItem = itemContent.closest('.meal-item');
-        if (!mealItem) return;
+    // Event listener for .meal-item .is--meal-side .item-content click to navigate to sub-item-customization tab
+    document.querySelectorAll('.meal-item .is--meal-side .item-content').forEach(item => {
+        item.addEventListener('click', function() {
+            console.log(`.meal-item .is--meal-side .item-content clicked, navigating to sub-item-customization for item: French Fries&&&&&`);
+            switchTab('sub-item-customization');
+            updateSubItemCustomizationPanel('French Fries&&&&&');
+        });
+    });
 
-        const itemName = mealItem.getAttribute('data-name');
-        if (!itemName) return;
-
-        console.log(`Meal item content clicked: ${itemName}`);
-
-        if (mealItem.classList.contains('is--meal-side')) {
-            // Navigate to sub-item-customization and display French Fries customization content
-            switchToSubItemCustomization(selectedItemName, 'French Fries&&&&&');
-        } else if (mealItem.id === 'meal-item-drink') {
-            // Navigate to sub-item-customization and display the corresponding drink customization content
-            const drinkId = mealItem.closest('.cart-item').getAttribute('data-drink-id');
-            switchToSubItemCustomization(selectedItemName, drinkId);
-        } else {
-            // Navigate to item-customization for the meal item
-            switchToCustomizationStep('item-customization', itemName);
-        }
-    }
-
-    // Add event listeners to meal item contents
-    function addMealItemContentListeners() {
-        const itemContents = document.querySelectorAll('.meal-item .item-content');
-        if (itemContents.length === 0) {
-            console.log('No meal item contents found');
-        } else {
-            itemContents.forEach(content => {
-                console.log(`Adding click listener to meal item content: ${content.closest('.meal-item').getAttribute('data-name')}`);
-                content.removeEventListener('click', handleMealItemContentClick); // Remove existing listener
-                content.addEventListener('click', handleMealItemContentClick); // Add new listener
-            });
-        }
-    }
-
-    // Initial setup
-    addMealItemContentListeners();
+    // Event listener for #meal-item-drink .item-content click to navigate to sub-item-customization tab
+    document.querySelectorAll('#meal-item-drink .item-content').forEach(item => {
+        item.addEventListener('click', function() {
+            const drinkId = this.closest('.cart-item').getAttribute('data-drink-id');
+            console.log(`#meal-item-drink .item-content clicked, navigating to sub-item-customization for drinkId: ${drinkId}`);
+            switchTab('sub-item-customization');
+            updateSubItemCustomizationPanel(drinkId);
+        });
+    });
     
     // Function to remove the selected item from the cart and reset customizations
     function removeSelectedItem() {
