@@ -399,7 +399,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log(`Switching to tab index: ${tabIndex}`);
         const customizationPanel = document.querySelector('.customization-panel');
         if (customizationPanel) {
-            const tabId = tabIndex === 1 ? 'drink-selection' : tabIndex === 2 ? 'meal-review' : 'item-customization'; // Update with actual tab 3 ID
+            const tabId = tabIndex === 1 ? 'drink-selection' : tabIndex === 2 ? 'mealreview' : tabIndex === 3 ? 'sub-item-customization' : 'item-customization';
             customizationPanel.setAttribute('data-current', `Tab ${tabIndex + 1}`);
             console.log(`Set customization-panel data-current to: Tab ${tabIndex + 1}`);
             const tabs = customizationPanel.querySelectorAll('.customization-step');
@@ -413,7 +413,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             // Show the customization-content for the corresponding item in tab 3
             if (tabIndex === 2) {
-                const customizationContentTab3 = document.querySelector(`#meal-review .customization-content[data-cart-customization-content="${selectedItemName}"]`);
+                const customizationContentTab3 = document.querySelector(`#mealreview .customization-content[data-cart-customization-content="${selectedItemName}"]`);
                 if (customizationContentTab3) {
                     customizationContentTab3.style.display = 'flex';
                     console.log('Showing customization content for Tab 3:', selectedItemName);
@@ -614,7 +614,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, 300); // Adjust the debounce wait time as needed
 
-    // Add click event listener to each menu item and remove button
+    // Add click event listener to each menu item, meal item and remove button
     function addClickListeners() {
         const menuItems = document.querySelectorAll('.menu-list .menu-item');
         if (menuItems.length === 0) {
@@ -628,7 +628,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             });
         }
-
+    
         const cartItems = document.querySelectorAll('.cart-list .cart-item');
         if (cartItems.length === 0) {
             console.log('No cart items found');
@@ -641,12 +641,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             });
         }
-
+    
         // Add event listeners to remove buttons in all tabs
         const removeButtons = document.querySelectorAll('#remove-button');
         removeButtons.forEach(button => {
             button.removeEventListener('click', removeSelectedItem); // Remove existing listener
             button.addEventListener('click', removeSelectedItem); // Add new listener
+        });
+    
+        // Add event listeners for item-content clicks within meal-item
+        const itemContents = document.querySelectorAll('.meal-item .item-content');
+        itemContents.forEach(content => {
+            content.addEventListener('click', handleMealItemClick);
+        });
+    
+        const drinkItemContents = document.querySelectorAll('#meal-item-drink .item-content');
+        drinkItemContents.forEach(content => {
+            content.addEventListener('click', handleItemContentClick);
         });
     }
 
@@ -1165,6 +1176,52 @@ document.addEventListener('DOMContentLoaded', function() {
             item.removeEventListener('click', handleDrinkSelectionClick); // Remove existing listener
             item.addEventListener('click', handleDrinkSelectionClick); // Add new listener
         });
+    }
+
+    // Function to handle meal item click using item-content as the click area
+    function handleMealItemClick(event) {
+        const itemContent = event.currentTarget.closest('.item-content');
+        if (!itemContent) return;
+        const mealItem = itemContent.closest('.meal-item');
+        const itemName = mealItem.getAttribute('data-name');
+        console.log(`Meal item clicked: ${itemName}`);
+        selectedItemName = itemName;
+        switchTab(0); // Navigate to item-customization tab
+        updateCustomizationPanel(itemName);
+        showSelectedItemCustomization(itemName);
+    }
+
+    // Function to handle item content click within #meal-item-drink
+    function handleItemContentClick(event) {
+        const itemContent = event.currentTarget;
+        const itemName = itemContent.closest('.meal-item').getAttribute('data-name');
+        const drinkId = itemContent.closest('.meal-item').getAttribute('data-drink-id');
+        console.log(`Item content clicked: ${itemName}, Drink ID: ${drinkId}`);
+        selectedItemName = itemName;
+        switchTab(3); // Navigate to sub-item-customization tab
+        updateSubItemCustomizationPanel(itemName, drinkId);
+    }
+
+    // Function to update sub-item-customization panel
+    function updateSubItemCustomizationPanel(itemName, drinkId) {
+        const primaryCustomizationContent = document.querySelector(`.customization-content[data-cart-customization-content="${itemName}"]`);
+        const subItemCustomizationContent = document.querySelector(`#sub-item-customization .customization-content`);
+        const drinkCustomizationContent = document.querySelector(`.item-customization[data-cart-customization="${drinkId}"]`);
+    
+        if (primaryCustomizationContent && subItemCustomizationContent) {
+            subItemCustomizationContent.innerHTML = primaryCustomizationContent.innerHTML;
+            console.log('Updated sub-item-customization with primary meal item content:', itemName);
+        } else {
+            console.log('Primary customization content or sub-item-customization content not found for:', itemName);
+        }
+    
+        if (drinkCustomizationContent) {
+            const subItemDrinkCustomizationContainer = document.querySelector(`#sub-item-customization .item-customization`);
+            subItemDrinkCustomizationContainer.innerHTML = drinkCustomizationContent.innerHTML;
+            console.log('Updated sub-item-customization with drink customization content:', drinkId);
+        } else {
+            console.log('Drink customization content not found for:', drinkId);
+        }
     }
         
     // Function to remove the selected item from the cart and reset customizations
