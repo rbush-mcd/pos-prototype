@@ -1167,12 +1167,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Function to switch tabs and show customization content
-    function switchTab(tabId) {
-        console.log(`Switching to tab: ${tabId}`);
+    // Function to switch tabs and show customization content using data-w-tab attribute
+    function switchTab(tabName) {
+        console.log(`Switching to tab: ${tabName}`);
         document.querySelectorAll('.customization-step').forEach(tab => {
-            tab.style.display = tab.id === tabId ? 'block' : 'none';
-            console.log(`Tab ${tab.id} display: ${tab.style.display}`);
+            const isActive = tab.getAttribute('data-w-tab') === tabName;
+            tab.style.display = isActive ? 'block' : 'none';
+            console.log(`Tab ${tab.getAttribute('data-w-tab')} display: ${tab.style.display}`);
         });
     }
 
@@ -1225,7 +1226,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.meal-item .is--meal-side .item-content').forEach(item => {
         item.addEventListener('click', function() {
             console.log(`.meal-item .is--meal-side .item-content clicked, navigating to sub-item-customization for item: French Fries&&&&&`);
-            switchTab('sub-item-customization');
+            switchTab('Happy Meal Toy Selection');
             updateSubItemCustomizationPanel('French Fries&&&&&');
         });
     });
@@ -1235,7 +1236,7 @@ document.addEventListener('DOMContentLoaded', function() {
         item.addEventListener('click', function() {
             const drinkId = this.closest('.cart-item').getAttribute('data-drink-id');
             console.log(`#meal-item-drink .item-content clicked, navigating to sub-item-customization for drinkId: ${drinkId}`);
-            switchTab('sub-item-customization');
+            switchTab('Happy Meal Toy Selection');
             updateSubItemCustomizationPanel(drinkId);
         });
     });
