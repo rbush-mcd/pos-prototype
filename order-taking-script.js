@@ -324,7 +324,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             // Update the customization text for all tabs
-            const descriptionElements = document.querySelectorAll(`.customization-content[data-cart-customization-content="${itemName}"] .order-item-description`);
+            const descriptionElements = document.querySelectorAll(`.customization-content[data-cart-customization-content="${itemName}"] .order-item-description:not(.is--meal-side)`);
             descriptionElements.forEach(descriptionElement => {
                 if (descriptionElement) {
                     descriptionElement.textContent = customizationText;
