@@ -1456,6 +1456,10 @@ function switchTab(tabIndex) {
             location.reload();
             console.log("Order submitted!");
         }
+        if (event.target.closest('#save-drink')) {
+            switchTab(2);
+        }
+
     });
 
     // Ensure content is fully loaded before attaching event listeners
