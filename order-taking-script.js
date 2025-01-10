@@ -210,10 +210,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    let approvalModalDisplayed = false;
+
     // Function to update the cart subtotal
     function updateCartSubtotal() {
         const cartItems = document.querySelectorAll('.cart-list .cart-item');
         let subtotal = 0;
+    
         cartItems.forEach(item => {
             const priceElement = item.querySelector('[data-cart-price]');
             if (priceElement && item.style.display !== 'none') {
@@ -223,12 +226,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
+    
         const subtotalElement = document.getElementById('cart-subtotal');
         if (subtotalElement) {
             subtotalElement.textContent = subtotal.toFixed(2);
         }
+    
         // Update the cart tax based on the new subtotal
         updateCartTax(subtotal);
+    
+        // Check if the subtotal is 50 or greater and display the approval modal
+        if (subtotal >= 50 && !approvalModalDisplayed) {
+            const approvalModal = document.getElementById('approval-modal');
+            if (approvalModal) {
+                approvalModal.style.display = 'flex';
+                console.log('Approval modal displayed');
+                approvalModalDisplayed = true;
+            } else {
+                console.log('Approval modal element not found');
+            }
+        }
     }
 
     // Function to update the cart tax
