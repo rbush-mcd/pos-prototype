@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM fully loaded and parsed');
 
+    let approvalModalDisplayed = false;
+
     // Debounce function to limit the rate of function calls
     function debounce(func, wait) {
         let timeout;
@@ -209,8 +211,6 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('No corresponding cart item found for data-cart-item:', itemName);
         }
     }
-
-    let approvalModalDisplayed = false;
 
     // Function to update the cart subtotal
     function updateCartSubtotal() {
