@@ -108,6 +108,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Refresh page on Submit Button click
+    document.addEventListener('DOMContentLoaded', function() {
+        const submitOrderButton = document.getElementById('submit-order');
+        if (submitOrderButton) {
+            submitOrderButton.addEventListener('click', function() {
+                console.log('Submit order button clicked, refreshing page');
+                location.reload();
+            });
+        } else {
+            console.log('Submit order button not found');
+        }
+    });
+
     // Function to move the most recently selected item to the bottom of the cart list
     function moveToBottom(cartItem) {
         const cartList = document.querySelector('.cart-list');
@@ -1272,19 +1285,6 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Cart item not found for:', selectedItemName);
         }
     }
-
-    // Refresh page on Submit Button click
-    document.addEventListener('DOMContentLoaded', function() {
-        const submitOrderButton = document.getElementById('submit-order');
-        if (submitOrderButton) {
-            submitOrderButton.addEventListener('click', function() {
-                console.log('Submit order button clicked, refreshing page');
-                location.reload();
-            });
-        } else {
-            console.log('Submit order button not found');
-        }
-    });
 
     // Event delegation for dynamically added items
     document.addEventListener('click', function(event) {
