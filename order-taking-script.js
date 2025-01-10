@@ -1453,6 +1453,8 @@ function switchTab(tabIndex) {
         } else {
             console.log('Cart item not found for:', selectedItemName);
         }
+
+        updateCartSubtotal();
     }
 
     // Event delegation for dynamically added items
