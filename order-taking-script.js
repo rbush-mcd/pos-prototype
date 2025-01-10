@@ -1273,6 +1273,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Refresh page on Submit Button click
+    document.addEventListener('DOMContentLoaded', function() {
+        const submitOrderButton = document.getElementById('submit-order');
+        if (submitOrderButton) {
+            submitOrderButton.addEventListener('click', function() {
+                console.log('Submit order button clicked, refreshing page');
+                location.reload();
+            });
+        } else {
+            console.log('Submit order button not found');
+        }
+    });
+
     // Event delegation for dynamically added items
     document.addEventListener('click', function(event) {
         if (event.target.closest('.customization-ingredient')) {
