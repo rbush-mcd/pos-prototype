@@ -411,44 +411,54 @@ document.addEventListener('DOMContentLoaded', function() {
     // Object to store the tab state for each item
     const itemTabState = {};
 
-    // Function to switch tabs
-    function switchTab(tabIndex) {
-        console.log(`Switching to tab index: ${tabIndex}`);
-        const customizationPanel = document.querySelector('.customization-panel');
-        if (customizationPanel) {
-            const tabId = tabIndex === 1 ? 'drink-selection' : tabIndex === 2 ? 'meal-review' : 'item-customization'; // Update with actual tab 3 ID
-            customizationPanel.setAttribute('data-current', `Tab ${tabIndex + 1}`);
-            console.log(`Set customization-panel data-current to: Tab ${tabIndex + 1}`);
-            const tabs = customizationPanel.querySelectorAll('.customization-step');
-            tabs.forEach(tab => {
-                tab.style.display = tab.id === tabId ? 'block' : 'none';
-                console.log(`Tab ${tab.id} display: ${tab.style.display}`);
-            });
-            // Save the current tab index for the selected item
-            if (selectedItemName) {
-                itemTabState[selectedItemName] = tabIndex;
-            }
-            // Show the customization-content for the corresponding item in tab 3
-            if (tabIndex === 2) {
-                const customizationContentTab3 = document.querySelector(`#meal-review .customization-content[data-cart-customization-content="${selectedItemName}"]`);
-                if (customizationContentTab3) {
-                    customizationContentTab3.style.display = 'flex';
-                    console.log('Showing customization content for Tab 3:', selectedItemName);
-                } else {
-                    console.log('No corresponding customization content found for Tab 3:', selectedItemName);
-                }
-            }
-        } else {
-            console.log('Customization panel not found');
+ // Function to switch tabs
+function switchTab(tabIndex) {
+    console.log(`Switching to tab index: ${tabIndex}`);
+    const customizationPanel = document.querySelector('.customization-panel');
+    if (customizationPanel) {
+        const tabId = tabIndex === 1 ? 'drink-selection' : tabIndex === 2 ? 'meal-review' : tabIndex === 3 ? 'sub-item-customization' : 'item-customization';
+        customizationPanel.setAttribute('data-current', `Tab ${tabIndex + 1}`);
+        console.log(`Set customization-panel data-current to: Tab ${tabIndex + 1}`);
+        const tabs = customizationPanel.querySelectorAll('.customization-step');
+        tabs.forEach(tab => {
+            tab.style.display = tab.id === tabId ? 'block' : 'none';
+            console.log(`Tab ${tab.id} display: ${tab.style.display}`);
+        });
+        // Save the current tab index for the selected item
+        if (selectedItemName) {
+            itemTabState[selectedItemName] = tabIndex;
         }
+        // Show the customization-content for the corresponding item in tab 3
+        if (tabIndex === 2) {
+            const customizationContentTab3 = document.querySelector(`#meal-review .customization-content[data-cart-customization-content="${selectedItemName}"]`);
+            if (customizationContentTab3) {
+                customizationContentTab3.style.display = 'flex';
+                console.log('Showing customization content for Tab 3:', selectedItemName);
+            } else {
+                console.log('No corresponding customization content found for Tab 3:', selectedItemName);
+            }
+        }
+    } else {
+        console.log('Customization panel not found');
     }
+}
 
     function makeItAMeal(event) {
         var cartItem = event.currentTarget.getAttribute('data-cart-item');
         if(!cartItem) {
             cartItem = event.currentTarget.getAttribute('data-name');
         }
-        const itemName = event.currentTarget.getAttribute('data-name');
+
+        //change drink
+        if(!cartItem) {
+            cartItem = event.currentTarget.closest('.item-customization').getAttribute('data-cart-customization');
+        }
+        
+        var itemName = event.currentTarget.getAttribute('data-name');
+
+        if(!itemName) {
+            itemName = event.currentTarget.closest('.item-customization').getAttribute('data-cart-customization');
+        }
         
             console.log(`"make-meal" button clicked for item: ${cartItem}`);
 
@@ -513,6 +523,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Event listener for the "make-meal" button
     document.querySelectorAll('#make-meal').forEach(button => {
+        button.addEventListener('click', function(event) {
+            makeItAMeal(event);
+        });
+    });
+
+    document.querySelectorAll('#change-drink').forEach(button => {
         button.addEventListener('click', function(event) {
             makeItAMeal(event);
         });
@@ -665,6 +681,18 @@ document.addEventListener('DOMContentLoaded', function() {
             button.removeEventListener('click', removeSelectedItem); // Remove existing listener
             button.addEventListener('click', removeSelectedItem); // Add new listener
         });
+
+        // Add event listeners for item-content clicks within meal-item
+        const itemContents = document.querySelectorAll('.meal-item:not(.is--meal-side) .item-content');
+        itemContents.forEach(content => {
+            content.addEventListener('click', handleMealItemClick);
+        });
+
+        const drinkItemContents = document.querySelectorAll('#meal-item-drink .item-content');
+        drinkItemContents.forEach(content => {
+            content.addEventListener('click', handleItemContentClick);
+        });
+
     }
 
     // Initial call to add click listeners and hide all cart items and customization contents
@@ -873,8 +901,16 @@ document.addEventListener('DOMContentLoaded', function() {
     function handleSizeControlClick(event) {
         const sizeControlButton = event.target;
         const size = sizeControlButton.getAttribute('data-size');
-        const customizationContent = sizeControlButton.closest('.customization-content');
-        const itemName = customizationContent.getAttribute('data-cart-customization-content');
+        var customizationContent = sizeControlButton.closest('.customization-content');
+        var itemName = customizationContent?.getAttribute('data-cart-customization-content');
+        var isItem = false;
+
+        if(!itemName) {
+            customizationContent = sizeControlButton.closest('.item-customization')
+            itemName = customizationContent.getAttribute('data-cart-customization');
+            isItem = true;
+        }
+        
         const correspondingCartItem = document.querySelector(`.cart-item[data-cart-item="${itemName}"]`);
         const itemSelector = sizeControlButton.parentElement.parentElement.parentElement.id;
 
@@ -905,6 +941,9 @@ document.addEventListener('DOMContentLoaded', function() {
         customizationData[itemName] = customizationData[itemName] || {};
         customizationData[itemName].selectedSize = size;
         saveCustomizationState(itemName, customizationData[itemName]);
+
+        //we are in a subitem view, navigate back to meal review
+        switchTab(2);
     }
 
     // Function to add event listeners to size control buttons
@@ -933,7 +972,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.customization-ingredient').forEach(item => {
             item.addEventListener('click', function() {
                 const ingredientName = this.getAttribute('ingredient-name');
-                const customizationType = this.closest('.customization-ingredient-list').id.split('-').pop().toUpperCase();
+                const customizationType = this.closest('.customization-ingredient-list')?.id.split('-').pop().toUpperCase();
                 const customizationText = customizationType === 'REQUIRED' ? ingredientName : `${customizationType} ${ingredientName}`;
                 updateItemDescription(customizationText);
             });
@@ -945,7 +984,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const target = event.target.closest('.customization-ingredient');
         if (!target) return;
         const ingredientName = target.getAttribute('ingredient-name');
-        const customizationType = target.closest('.customization-ingredient-list').id.split('-').pop().toUpperCase();
+        const customizationType = target.closest('.customization-ingredient-list')?.id.split('-').pop().toUpperCase();
         const customizationText = customizationType === 'REQUIRED' ? ingredientName : `${customizationType} ${ingredientName}`;
         console.log('Customization ingredient clicked:', customizationText);
         // Toggle the focused class on the clicked element
@@ -1208,7 +1247,15 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             console.log('mealReviewDrinkImageElement not found');
         }
-    
+
+        const mealReviewDrinkItem = document.querySelector(`.customization-content[data-cart-customization-content="${selectedItemName}"] #meal-item-drink`);
+        if (mealReviewDrinkItem) {
+            mealReviewDrinkItem.setAttribute('data-selected-drink', drinkName);
+            mealReviewDrinkItem.setAttribute('data-drink-id', drinkId);
+        } else {
+            console.log('mealReviewDrinkItem not found');
+        }
+        
         // Switch to the meal-review tab
         switchTab(2);
         updateSizeAfterMeal(correspondingCartItem, mealReviewDrinkItemElement);
@@ -1263,7 +1310,51 @@ document.addEventListener('DOMContentLoaded', function() {
             item.addEventListener('click', handleDrinkSelectionClick); // Add new listener
         });
     }
-        
+
+    // Function to handle meal item click using item-content as the click area
+    function handleMealItemClick(event) {
+        const itemContent = event.currentTarget.closest('.item-content');
+        if (!itemContent) return;
+        const mealItem = itemContent.closest('.meal-item');
+        const itemName = mealItem.getAttribute('data-name');
+        console.log(`Meal item clicked: ${itemName}`);
+        selectedItemName = itemName;
+        switchTab(0); // Navigate to item-customization tab
+        updateCustomizationPanel(itemName);
+        showSelectedItemCustomization(itemName);
+    }
+
+    // Function to handle item content click within #meal-item-drink
+    function handleItemContentClick(event) {
+        const itemContent = event.currentTarget;
+
+        //detect side or drink
+        const side = itemContent.closest('.meal-item.is--meal-side');
+        if(side) {
+            
+        }
+
+        const drink = itemContent.closest('#meal-item-drink.meal-item');
+        if(drink) {
+            const itemName = drink.getAttribute('data-name');
+            const drinkId = drink.getAttribute('data-drink-id');
+            console.log(`Item content clicked: ${itemName}, Drink ID: ${drinkId}`);
+            selectedItemName = itemName;
+            switchTab(3); // Navigate to sub-item-customization tab
+            updateSubItemCustomizationPanel(itemName, drinkId);
+        }
+    }
+
+    // Function to update sub-item-customization panel
+    function updateSubItemCustomizationPanel(itemName, drinkId) {
+        const primaryCustomizationContent = document.querySelector(`sub-item-customization .customization-content[data-cart-customization-content="${itemName}"]`);
+        //const subItemCustomizationContent = document.querySelector(`#sub-item-customization #customization-section .customization-content`);
+        const drinkCustomizationContent = document.querySelector(`#sub-item-customization #customization-section .item-customization[data-cart-customization="${drinkId}"]`);
+
+        $(primaryCustomizationContent).show();
+        $(drinkCustomizationContent).show();
+    }
+
     // Function to remove the selected item from the cart and reset customizations
     function removeSelectedItem() {
         if (!selectedItemName) {
