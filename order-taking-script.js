@@ -547,36 +547,26 @@ function switchTab(tabIndex) {
         const customizationPanel = document.querySelector('.customization-panel');
         const correspondingCartItem = document.querySelector(`.cart-list .cart-item[data-cart-item="${itemName}"]`);
 
-        if (selectedItemName === itemName) {
-            if (customizationPanel) {
-                customizationPanel.style.display = 'flex';
-                updateMenuListGrid(false);
-                updateCartCustomizationsWidth(false);
-            }
-            correspondingCartItem.classList.remove('focused');
-            selectedItemName = null;
-        } else {
-            selectedItemName = itemName;
-            console.log('Selected item name set to:', selectedItemName);
-            const cartItems = document.querySelectorAll('.cart-list .cart-item');
-            cartItems.forEach(item => item.classList.remove('focused'));
-            correspondingCartItem.classList.add('focused');
-            // Update the customization panel with the stored customization data
-            updateCustomizationPanel(itemName);
-            showSelectedItemCustomization(itemName);
+        selectedItemName = itemName;
+        console.log('Selected item name set to:', selectedItemName);
+        const cartItems = document.querySelectorAll('.cart-list .cart-item');
+        cartItems.forEach(item => item.classList.remove('focused'));
+        correspondingCartItem.classList.add('focused');
+        // Update the customization panel with the stored customization data
+        updateCustomizationPanel(itemName);
+        showSelectedItemCustomization(itemName);
 
-            // Restore the tab state for the selected item
-            handleItemSelection(itemName);
+        // Restore the tab state for the selected item
+        handleItemSelection(itemName);
 
-            // Update the quantity-control amount field
-            const amountElement = correspondingCartItem.querySelector('[data-cart-amount]');
-            const quantityControlAmountElement = document.querySelector(`.customization-content[data-cart-customization-content="${itemName}"] .quantity-control .amount`);
-            if (amountElement && quantityControlAmountElement) {
-                const currentAmount = amountElement.getAttribute('amount');
-                quantityControlAmountElement.setAttribute('amount', currentAmount);
-                quantityControlAmountElement.textContent = currentAmount;
-                console.log('Updated quantity control amount:', currentAmount);
-            }
+        // Update the quantity-control amount field
+        const amountElement = correspondingCartItem.querySelector('[data-cart-amount]');
+        const quantityControlAmountElement = document.querySelector(`.customization-content[data-cart-customization-content="${itemName}"] .quantity-control .amount`);
+        if (amountElement && quantityControlAmountElement) {
+            const currentAmount = amountElement.getAttribute('amount');
+            quantityControlAmountElement.setAttribute('amount', currentAmount);
+            quantityControlAmountElement.textContent = currentAmount;
+            console.log('Updated quantity control amount:', currentAmount);
         }
     }
 
@@ -1429,13 +1419,34 @@ function switchTab(tabIndex) {
             }
 
             // Reset the size text blocks to "M"
-            updateSizeTextBlocks('M', cartItem);
+            // updateSizeTextBlocks('M', cartItem);
 
             // Clear the selected item name
+            const oldItem = selectedItemName;
             selectedItemName = null;
 
             // Reset the tab back to 1
             switchTab(0);
+
+            const firstItem = document.querySelectorAll('.cart-item-wrapper > [style="display: flex;"]');
+            if (firstItem.length >= 1) {
+                const customOldItemHeader = document.querySelector(`#item-customization .customization-wrapper [data-cart-customization-content="${oldItem}"]`);
+                const customOldItemIngridients = document.querySelector(`#item-customization .customization-section [data-cart-customization="${oldItem}"]`);
+                
+                if (customOldItemHeader) {
+                    customOldItemHeader.style.display = 'none';
+                }
+
+                if (customOldItemIngridients) {
+                    customOldItemIngridients.style.display = 'none';
+                }
+            } else {
+                const placeHolderPanel = document.querySelector('#panel-placeholder');
+                if (placeHolderPanel) {
+                    placeHolderPanel.style.display = 'block';
+                }
+            }
+            console.log("Reset Customization panel");
 
             // Clear the tab state for the removed item
             delete itemTabState[cartItem.getAttribute('data-cart-item')];
