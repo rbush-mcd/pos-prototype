@@ -936,9 +936,6 @@ function switchTab(tabIndex) {
         customizationData[itemName] = customizationData[itemName] || {};
         customizationData[itemName].selectedSize = size;
         saveCustomizationState(itemName, customizationData[itemName]);
-
-        //we are in a subitem view, navigate back to meal review
-        switchTab(2);
     }
 
     // Function to add event listeners to size control buttons
