@@ -813,32 +813,59 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(updateTime, 1000);
 
     // Function to update size text blocks
-    function updateSizeTextBlocks(size, cartItem) {
+    function updateSizeTextBlocks(item, size, cartItem, customItem) {
         const mealItemSizeElement = cartItem.querySelector('#side-item-size[data-size="meal-item-size"]');
         const mealSideSizeElement = cartItem.querySelector('#meal-side-size[data-size="cart-item-size"][data-side-size="meal-side-size"]');
         const mealDrinkSizeElement = cartItem.querySelector('#meal-drink-size[data-size="cart-item-size"][data-drink-size="meal-drink-size"]');
+
+        const customSideSizeElement = customItem.querySelectorAll('#meal-item-side .meal-item-size')[0];
+        const customDrinkSizeElement = customItem.querySelectorAll('#meal-item-drink .meal-item-size')[0];
      
         if (mealItemSizeElement) {
             mealItemSizeElement.textContent = size;
             console.log('Updated meal-item-size to:', size);
         }
-        if (mealSideSizeElement) {
+
+        if ((item == 'meal-item-side') && mealSideSizeElement) {
             mealSideSizeElement.textContent = size;
+            customSideSizeElement.textContent = size;
             console.log('Updated meal-side-size to:', size);
         }
-        if (mealDrinkSizeElement) {
+        
+        if ((item == 'meal-item-drink') && mealDrinkSizeElement) {
             mealDrinkSizeElement.textContent = size;
+            customDrinkSizeElement.textContent = size;
             console.log('Updated meal-drink-size to:', size);
         }
+    }
+
+    function updateMealSize(size, cartItem, headerItem) {
+        const sideCartItem = cartItem.querySelector("#meal-side-size")
+        const sideCustomItem = headerItem.querySelector('#meal-item-side [data-size="meal-item-size"]')
+
+        if (sideCartItem) {
+            sideCartItem.textContent = size;
+            console.log("Updated meal size in cart to:", size);
+        }
+
+        if (sideCustomItem) {
+            sideCustomItem.textContent = size;
+            console.log("Updated meal size in custom panel to:", size);
+        }
+    }
+
+    function updateSize(itemName, size, cartItem, customItem) {
+        const itemElementCart = cartItem.querySelector('#cart-item-size[data-size=cart-item-size][data-cart-size=cart-item-size]');
+        const itemElementCustom = customItem.querySelector(`#meal-item-size[data-name="${itemName}"]`);
         
-        // Update the text element meal-item-size within the customization-content collection item on tab 2
-        const customizationContentTab2 = document.querySelector(`#drink-selection .customization-content[data-cart-customization-content="${cartItem.getAttribute('data-cart-item')}"]`);
-        if (customizationContentTab2) {
-            const mealItemSizeTab2 = customizationContentTab2.querySelector('#side-item-size[data-size="meal-item-size"]');
-            if (mealItemSizeTab2) {
-                mealItemSizeTab2.textContent = size;
-                console.log('Updated meal-item-size on Tab 2 to:', size);
-            }
+        if (itemElementCart) {
+            itemElementCart.textContent = size;
+            console.log('Updated drink-size in cart to:', size);
+        }
+
+        if (itemElementCustom) {
+            itemElementCustom.textContent = size;
+            console.log('Updated drink-size in custom panel to:', size);
         }
     }
 
@@ -849,7 +876,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const customizationContent = sizeControlButton.closest('.customization-content');
         const itemName = customizationContent.getAttribute('data-cart-customization-content');
         const correspondingCartItem = document.querySelector(`.cart-item[data-cart-item="${itemName}"]`);
+        const itemSelector = sizeControlButton.parentElement.parentElement.parentElement.id;
 
+        console.log("Item Selector: " + itemSelector);
+        
         if (!correspondingCartItem) return;
 
         // Update size control button states
@@ -860,8 +890,16 @@ document.addEventListener('DOMContentLoaded', function() {
         sizeControlButtons.forEach(button => button.classList.remove('focused'));
         sizeControlButton.classList.add('focused');
 
-        // Update text elements based on selected size
-        updateSizeTextBlocks(size, correspondingCartItem);
+        if (customizationContent.childNodes.length == 2 && !customizationContent.classList.contains('is--meal-review')){
+            console.log("Just a drink!");
+            updateSize(itemName, size, correspondingCartItem, customizationContent);
+        } else if (customizationContent.childNodes.length == 3){
+            console.log("Meal seclection!");
+            updateMealSize(size, correspondingCartItem, customizationContent);
+        } else {
+            // Update text elements based on selected size
+            updateSizeTextBlocks(itemSelector, size, correspondingCartItem, customizationContent);
+        }
 
         // Save the state of the size control buttons
         customizationData[itemName] = customizationData[itemName] || {};
@@ -1173,6 +1211,48 @@ document.addEventListener('DOMContentLoaded', function() {
     
         // Switch to the meal-review tab
         switchTab(2);
+        updateSizeAfterMeal(correspondingCartItem, mealReviewDrinkItemElement);
+    }
+
+    function updateSizeAfterMeal(cartItem, drinkItem) {
+        const size = cartItem.querySelector("#meal-side #meal-side-size").textContent;
+        const cartDrink = cartItem.querySelector("#meal-drink #meal-drink-size");
+
+        if (cartDrink) {
+            cartDrink.textContent = size;
+            console.log("Updated drink meal size in cart to: ", size);
+        }
+
+        const customCartItem = drinkItem.parentElement.parentElement.parentElement.parentElement.parentElement;
+
+        const sideCustomItem = customCartItem.querySelector("#meal-item-side #meal-item-size");
+        const drinkCustomItem = customCartItem.querySelector("#meal-item-drink #meal-item-size");
+
+        if (sideCustomItem) {
+            sideCustomItem.textContent = size;
+            console.log("Updated side size in custom cart to: ", size);
+        }
+
+        if (drinkCustomItem) {
+            drinkCustomItem.textContent = size;
+            console.log("updated drink size in custom cart to: ", size);
+        }
+
+        const buttonElement = customCartItem.querySelectorAll(".size-control")
+
+        if (size === 'M') {
+            buttonElement.forEach((button) => {
+                const mediumButton = button.querySelector("#size-control-medium");
+                mediumButton.classList.add("focused");
+            })
+        }
+
+        if (size === 'L') {
+            buttonElement.forEach((button) => {
+                const LargeButton = button.querySelector("#size-control-large");
+                LargeButton.classList.add("focused");
+            })
+        }
     }
 
     // Function to add event listeners to drink selection items
@@ -1280,6 +1360,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         if (event.target.closest('#remove-button')) {
             removeSelectedItem();
+        }
+        if (event.target.textContent === 'Submit Order') {
+            location.reload();
+            console.log("Order submitted!");
         }
     });
 
