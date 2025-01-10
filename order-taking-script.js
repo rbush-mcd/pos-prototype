@@ -417,6 +417,11 @@ function switchTab(tabIndex) {
     const customizationPanel = document.querySelector('.customization-panel');
     if (customizationPanel) {
         const tabId = tabIndex === 1 ? 'drink-selection' : tabIndex === 2 ? 'meal-review' : tabIndex === 3 ? 'sub-item-customization' : 'item-customization';
+        
+        if (tabIndex + 1 == 4) {
+            tabIndex = 2;
+        }
+        
         customizationPanel.setAttribute('data-current', `Tab ${tabIndex + 1}`);
         console.log(`Set customization-panel data-current to: Tab ${tabIndex + 1}`);
         const tabs = customizationPanel.querySelectorAll('.customization-step');
