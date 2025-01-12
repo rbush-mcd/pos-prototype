@@ -3,6 +3,44 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let approvalModalDisplayed = false;
 
+    // Observer for ingredient-embed elements
+    function createObserver() {
+        let observer;
+    
+        let options = {
+            root: null, // Use the viewport as the root
+            rootMargin: '0px',
+            threshold: 0.1 // Trigger when 10% of the element is visible
+        };
+    
+        observer = new IntersectionObserver(handleIntersect, options);
+    
+        document.querySelectorAll('.ingredient-embed').forEach(embed => {
+            observer.observe(embed);
+        });
+    }
+    
+    // Intersect handling for ingredient-embed elements
+    function handleIntersect(entries, observer) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // Element is visible, run the script
+                runScript(entry.target);
+                // Optionally, unobserve the element after running the script
+                observer.unobserve(entry.target);
+            }
+        });
+    }
+    
+    // Run script for ingredient-embed elements
+    function runScript(element) {
+        // Your script logic here
+        const script = element.querySelector('script');
+        if (script) {
+            eval(script.innerHTML);
+        }
+    }
+
     // Debounce function to limit the rate of function calls
     function debounce(func, wait) {
         let timeout;
