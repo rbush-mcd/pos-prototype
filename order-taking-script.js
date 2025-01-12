@@ -1191,25 +1191,40 @@ function switchTab(tabIndex) {
             console.log('No selected item name');
             return;
         }
+    
         const cartItemDescription = document.querySelector(`.cart-item[data-cart-item="${selectedItemName}"] .order-item-description.is--cart-description`);
         if (cartItemDescription) {
             let currentDescription = cartItemDescription.textContent.trim();
             if (currentDescription === '-') currentDescription = '';
-            if (currentDescription.includes(customizationText)) {
-                currentDescription = currentDescription.replace(customizationText, '').replace(/,\s*,/g, ',').replace(/^,|,$/g, '').trim();
+    
+            // Check if the customization type is "ADD"
+            if (customizationText.startsWith('ADD')) {
+                const baseText = customizationText.replace(/ \d+$/, ''); // Remove any existing number
+                let match = currentDescription.match(new RegExp(`${baseText}( \\d+)?`));
+                if (match) {
+                    let currentAmount = match[1] ? parseInt(match[1].trim()) : 1;
+                    currentAmount += 1;
+                    currentDescription = currentDescription.replace(match[0], `${baseText} ${currentAmount}`);
+                } else {
+                    currentDescription = currentDescription ? `${currentDescription}, ${customizationText}` : customizationText;
+                }
             } else {
-                currentDescription = currentDescription ? `${currentDescription}, ${customizationText}` : customizationText;
+                if (currentDescription.includes(customizationText)) {
+                    currentDescription = currentDescription.replace(customizationText, '').replace(/,\s*,/g, ',').replace(/^,|,$/g, '').trim();
+                } else {
+                    currentDescription = currentDescription ? `${currentDescription}, ${customizationText}` : customizationText;
+                }
             }
+    
             cartItemDescription.textContent = currentDescription || '-';
             console.log('Updated cart item description:', currentDescription);
-
+    
             // Show the cart item description if it has customizations
             cartItemDescription.style.display = currentDescription ? 'block' : 'none';
-
+    
             // Update the meal-item description to match the cart-item description for both tabs
             const mealItemDescriptionTab1 = document.querySelector(`.meal-item[data-meal-item="${selectedItemName}"] .order-item-description`);
             const mealItemDescriptionTab2 = document.querySelector(`#drink-selection .meal-item[data-meal-item="${selectedItemName}"] .order-item-description`);
-
             if (mealItemDescriptionTab1) {
                 mealItemDescriptionTab1.textContent = currentDescription;
                 mealItemDescriptionTab1.style.display = 'block';
@@ -1217,7 +1232,6 @@ function switchTab(tabIndex) {
             } else {
                 console.log('Meal item description element not found for Tab 1:', selectedItemName);
             }
-
             if (mealItemDescriptionTab2) {
                 mealItemDescriptionTab2.textContent = currentDescription;
                 mealItemDescriptionTab2.style.display = 'block';
