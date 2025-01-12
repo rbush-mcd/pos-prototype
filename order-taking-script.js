@@ -1199,7 +1199,7 @@ function switchTab(tabIndex) {
     
             // Check if the customization type is "ADD"
             if (customizationText.startsWith('ADD')) {
-                const baseText = customizationText.replace(/ \d+$/, ''); // Remove any existing number
+                const baseText = customizationText.replace(/ \d+ /, ' '); // Remove any existing number
                 let match = currentDescription.match(new RegExp(`${baseText}( \\d+)?`));
                 if (match) {
                     let currentAmount = match[1] ? parseInt(match[1].trim()) : 1;
@@ -1249,13 +1249,13 @@ function switchTab(tabIndex) {
         console.log('Updating incrementing description for:', ingredientName);
         const customizationTextBase = `${customizationType} ${ingredientName}`;
         let currentDescription = target.textContent.trim();
-        let match = currentDescription.match(new RegExp(`${customizationTextBase}( \\d+)?`));
+        let match = currentDescription.match(new RegExp(`${customizationType} (\\d+ )?${ingredientName}`));
         if (match) {
             let currentAmount = match[1] ? parseInt(match[1].trim()) : 1;
             currentAmount += 1;
-            currentDescription = currentDescription.replace(match[0], `${customizationTextBase} ${currentAmount}`);
+            currentDescription = currentDescription.replace(match[0], `${customizationType} ${currentAmount} ${ingredientName}`);
         } else {
-            currentDescription = `${customizationTextBase}`;
+            currentDescription = `${customizationType} 1 ${ingredientName}`;
         }
         console.log('Updated description:', currentDescription);
         return currentDescription;
