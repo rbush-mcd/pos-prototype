@@ -1023,41 +1023,41 @@ function switchTab(tabIndex) {
         // Check if the customization type is "ADD"
         if (customizationType === 'ADD') {
             // Update the description with incrementing amounts
-            updateItemDescription(customizationText);
+            customizationText = updateIncrementingDescription(target, ingredientName, customizationType);
         } else {
             // Toggle the focused class on the clicked element
             target.classList.toggle('focused');
+        }
     
-            // Save the state of the customization ingredient for the selected item
-            customizationData[selectedItemName] = customizationData[selectedItemName] || {};
-            customizationData[selectedItemName].ingredients = customizationData[selectedItemName].ingredients || {};
-            customizationData[selectedItemName].ingredients[ingredientName] = target.classList.contains('focused');
-            saveCustomizationState(selectedItemName, customizationData[selectedItemName]);
+        // Save the state of the customization ingredient for the selected item
+        customizationData[selectedItemName] = customizationData[selectedItemName] || {};
+        customizationData[selectedItemName].ingredients = customizationData[selectedItemName].ingredients || {};
+        customizationData[selectedItemName].ingredients[ingredientName] = target.classList.contains('focused');
+        saveCustomizationState(selectedItemName, customizationData[selectedItemName]);
     
-            // Check if the quantity of the selected item is greater than 1
-            const correspondingCartItem = document.querySelector(`.cart-item[data-cart-item="${selectedItemName}"]`);
-            const amountElement = correspondingCartItem.querySelector('[data-cart-amount]');
-            let currentAmount = parseInt(amountElement.getAttribute('amount'), 10);
+        // Check if the quantity of the selected item is greater than 1
+        const correspondingCartItem = document.querySelector(`.cart-item[data-cart-item="${selectedItemName}"]`);
+        const amountElement = correspondingCartItem.querySelector('[data-cart-amount]');
+        let currentAmount = parseInt(amountElement.getAttribute('amount'), 10);
     
-            if (currentAmount > 1) {
-                // Calculate the base price of the item
-                const priceElement = correspondingCartItem.querySelector('[data-cart-price]');
-                const basePrice = parseFloat(priceElement.textContent) / currentAmount;
+        if (currentAmount > 1) {
+            // Calculate the base price of the item
+            const priceElement = correspondingCartItem.querySelector('[data-cart-price]');
+            const basePrice = parseFloat(priceElement.textContent) / currentAmount;
     
-                // Decrement the quantity of the original item
-                currentAmount -= 1;
-                amountElement.setAttribute('amount', currentAmount);
-                amountElement.textContent = currentAmount;
+            // Decrement the quantity of the original item
+            currentAmount -= 1;
+            amountElement.setAttribute('amount', currentAmount);
+            amountElement.textContent = currentAmount;
     
-                // Update the price of the original item
-                updateCartItemPrice(selectedItemName, basePrice);
+            // Update the price of the original item
+            updateCartItemPrice(selectedItemName, basePrice);
     
-                // Clone the existing cart item and update it with the customization
-                cloneAndCustomizeCartItem(correspondingCartItem, customizationText, basePrice);
-            } else {
-                // Update the item description
-                updateItemDescription(customizationText);
-            }
+            // Clone the existing cart item and update it with the customization
+            cloneAndCustomizeCartItem(correspondingCartItem, customizationText, basePrice);
+        } else {
+            // Update the item description
+            updateItemDescription(customizationText);
         }
     }
     
@@ -1199,8 +1199,15 @@ function switchTab(tabIndex) {
     
             // Check if the customization type is "ADD"
             if (customizationText.startsWith('ADD')) {
-                const ingredientName = customizationText.split(' ').slice(2).join(' ');
-                currentDescription = updateIncrementingDescription(currentDescription, ingredientName, 'ADD');
+                const baseText = customizationText.replace(/ \d+$/, ''); // Remove any existing number
+                let match = currentDescription.match(new RegExp(`${baseText}( \\d+)?`));
+                if (match) {
+                    let currentAmount = match[1] ? parseInt(match[1].trim()) : 1;
+                    currentAmount += 1;
+                    currentDescription = currentDescription.replace(match[0], `${baseText} ${currentAmount}`);
+                } else {
+                    currentDescription = currentDescription ? `${currentDescription}, ${customizationText}` : customizationText;
+                }
             } else {
                 if (currentDescription.includes(customizationText)) {
                     currentDescription = currentDescription.replace(customizationText, '').replace(/,\s*,/g, ',').replace(/^,|,$/g, '').trim();
@@ -1238,16 +1245,17 @@ function switchTab(tabIndex) {
     }
 
     // Function to update description with incrementing amounts for "ADD" customization type
-    function updateIncrementingDescription(currentDescription, ingredientName, customizationType) {
+    function updateIncrementingDescription(target, ingredientName, customizationType) {
         console.log('Updating incrementing description for:', ingredientName);
         const customizationTextBase = `${customizationType} ${ingredientName}`;
-        let match = currentDescription.match(new RegExp(`${customizationType} (\\d+) ${ingredientName}`));
+        let currentDescription = target.textContent.trim();
+        let match = currentDescription.match(new RegExp(`${customizationTextBase}( \\d+)?`));
         if (match) {
             let currentAmount = match[1] ? parseInt(match[1].trim()) : 1;
             currentAmount += 1;
-            currentDescription = currentDescription.replace(match[0], `${customizationType} ${currentAmount} ${ingredientName}`);
+            currentDescription = currentDescription.replace(match[0], `${customizationTextBase} ${currentAmount}`);
         } else {
-            currentDescription = currentDescription ? `${currentDescription}, ${customizationType} 1 ${ingredientName}` : `${customizationType} 1 ${ingredientName}`;
+            currentDescription = `${customizationTextBase}`;
         }
         console.log('Updated description:', currentDescription);
         return currentDescription;
