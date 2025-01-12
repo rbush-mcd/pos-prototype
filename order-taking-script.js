@@ -1020,10 +1020,8 @@ function switchTab(tabIndex) {
     
         console.log('Customization ingredient clicked:', customizationText);
     
-        // Check if the ingredient is within ingredient-embed-add or ingredient-embed-add-1
-        const isIncrementingEmbed = target.closest('.ingredient-embed-add') || target.closest('.ingredient-embed-add-1');
-    
-        if (isIncrementingEmbed) {
+        // Check if the customization type is "ADD"
+        if (customizationType === 'ADD') {
             // Update the description with incrementing amounts
             customizationText = updateIncrementingDescription(target, ingredientName, customizationType);
         } else {
@@ -1062,6 +1060,7 @@ function switchTab(tabIndex) {
             updateItemDescription(customizationText);
         }
     }
+    
     // Function to clone and customize the cart item
     function cloneAndCustomizeCartItem(originalCartItem, customizationText, basePrice) {
         const cartList = document.querySelector('.cart-list');
@@ -1231,8 +1230,9 @@ function switchTab(tabIndex) {
         }
     }
 
-    // Function to update description with incrementing amounts for ingredient-embed-add elements
+    // Function to update description with incrementing amounts for "ADD" customization type
     function updateIncrementingDescription(target, ingredientName, customizationType) {
+        console.log('Updating incrementing description for:', ingredientName);
         const customizationTextBase = `${customizationType} ${ingredientName}`;
         let currentDescription = target.textContent.trim();
         let match = currentDescription.match(new RegExp(`${customizationTextBase}( \\d+)?`));
@@ -1243,6 +1243,7 @@ function switchTab(tabIndex) {
         } else {
             currentDescription = `${customizationTextBase}`;
         }
+        console.log('Updated description:', currentDescription);
         return currentDescription;
     }
 
