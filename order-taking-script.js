@@ -1020,10 +1020,10 @@ function switchTab(tabIndex) {
     
         console.log('Customization ingredient clicked:', customizationText);
     
-        // Check if the customization type is "ADD"
-        if (customizationType === 'ADD') {
+        // Check if the customization type is "ADD" or if the ID is "customization-ingredients-add-1"
+        if (customizationType === 'ADD' || customizationList?.id === 'customization-ingredients-add-1') {
             // Update the description with incrementing amounts
-            customizationText = updateIncrementingDescription(target, ingredientName, customizationType);
+            updateItemDescription(customizationText);
         } else {
             // Toggle the focused class on the clicked element
             target.classList.toggle('focused');
