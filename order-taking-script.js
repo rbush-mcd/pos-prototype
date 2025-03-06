@@ -53,6 +53,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Customization data object
     const customizationData = {};
 
+    // Function to check visibility of #drink-selection element:
+    function isDrinkSelectionVisible() {
+        const drinkSelection = document.getElementById('drink-selection');
+        return drinkSelection && drinkSelection.style.display !== 'none';
+    }
+
     // Function to save customization state
     function saveCustomizationState(itemName, customizationData) {
         localStorage.setItem(itemName, JSON.stringify(customizationData));
@@ -615,68 +621,76 @@ function switchTab(tabIndex) {
 
     // Function to handle menu item click
     const handleMenuItemClick = debounce(function(itemName) {
-        console.log('handleMenuItemClick called with:', itemName);
-        let correspondingCartItem = document.querySelector(`.cart-item[data-cart-item="${itemName}"]`);
-        let quantityToAdd = preselectedQuantity ? parseInt(preselectedQuantity, 10) : 1;
-        preselectedQuantity = ''; // Reset preselected quantity after adding to cart
-        updatePreselectedQuantityDisplay();
-
-        if (correspondingCartItem && correspondingCartItem.style.display !== 'none') {
-            // If the cart item is already visible, increment the amount
-            const newAmount = incrementCartItem(itemName, quantityToAdd);
-            // Update the quantity-control amount field
-            const quantityControlAmountElement = document.querySelector('.quantity-control .amount');
-            if (quantityControlAmountElement) {
-                quantityControlAmountElement.setAttribute('amount', newAmount);
-                quantityControlAmountElement.textContent = newAmount;
-                console.log('Updated quantity control amount:', newAmount);
-            }
+        const menuItem = document.querySelector(`.menu-item[data-name="${itemName}"]`);
+        const category = menuItem.getAttribute('data-category');
+    
+        if (isDrinkSelectionVisible() && (category === 'Drinks' || category === 'McCafé')) {
+            handleDrinkSelectionClick({ target: menuItem });
         } else {
-            if (!correspondingCartItem) {
-                // Create a new cart item if it doesn't exist
-                correspondingCartItem = document.createElement('div');
-                correspondingCartItem.classList.add('cart-item');
-                correspondingCartItem.setAttribute('data-cart-item', itemName);
-                correspondingCartItem.innerHTML = `
-                    <div class="amount" data-cart-amount="0">0</div>
-                    <div class="order-item-description is--cart-description" data-cart-description="item-description" style="display: none;">-</div>
-                    <!-- Add other necessary elements for the cart item -->
-                `;
-                document.querySelector('.cart-list').appendChild(correspondingCartItem);
-                console.log('Added new cart item:', correspondingCartItem);
+            // Existing handleMenuItemClick logic
+            console.log('handleMenuItemClick called with:', itemName);
+            let correspondingCartItem = document.querySelector(`.cart-item[data-cart-item="${itemName}"]`);
+            let quantityToAdd = preselectedQuantity ? parseInt(preselectedQuantity, 10) : 1;
+            preselectedQuantity = ''; // Reset preselected quantity after adding to cart
+            updatePreselectedQuantityDisplay();
+    
+            if (correspondingCartItem && correspondingCartItem.style.display !== 'none') {
+                // If the cart item is already visible, increment the amount
+                const newAmount = incrementCartItem(itemName, quantityToAdd);
+                // Update the quantity-control amount field
+                const quantityControlAmountElement = document.querySelector('.quantity-control .amount');
+                if (quantityControlAmountElement) {
+                    quantityControlAmountElement.setAttribute('amount', newAmount);
+                    quantityControlAmountElement.textContent = newAmount;
+                    console.log('Updated quantity control amount:', newAmount);
+                }
             } else {
-                // Reset the cart item if it already exists but was hidden
-                correspondingCartItem.style.display = 'flex';
-                const amountElement = correspondingCartItem.querySelector('[data-cart-amount]');
-                if (amountElement) {
-                    amountElement.setAttribute('amount', 0);
-                    amountElement.textContent = 0;
+                if (!correspondingCartItem) {
+                    // Create a new cart item if it doesn't exist
+                    correspondingCartItem = document.createElement('div');
+                    correspondingCartItem.classList.add('cart-item');
+                    correspondingCartItem.setAttribute('data-cart-item', itemName);
+                    correspondingCartItem.innerHTML = `
+                        <div class="amount" data-cart-amount="0">0</div>
+                        <div class="order-item-description is--cart-description" data-cart-description="item-description" style="display: none;">-</div>
+                        <!-- Add other necessary elements for the cart item -->
+                    `;
+                    document.querySelector('.cart-list').appendChild(correspondingCartItem);
+                    console.log('Added new cart item:', correspondingCartItem);
+                } else {
+                    // Reset the cart item if it already exists but was hidden
+                    correspondingCartItem.style.display = 'flex';
+                    const amountElement = correspondingCartItem.querySelector('[data-cart-amount]');
+                    if (amountElement) {
+                        amountElement.setAttribute('amount', 0);
+                        amountElement.textContent = 0;
+                    }
+                    const cartItemDescription = correspondingCartItem.querySelector('[data-cart-description]');
+                    if (cartItemDescription) {
+                        cartItemDescription.textContent = '-';
+                        cartItemDescription.style.display = 'none';
+                    }
                 }
-                const cartItemDescription = correspondingCartItem.querySelector('[data-cart-description]');
-                if (cartItemDescription) {
-                    cartItemDescription.textContent = '-';
-                    cartItemDescription.style.display = 'none';
+                const cartItems = document.querySelectorAll('.cart-list .cart-item');
+                cartItems.forEach(item => item.classList.remove('focused'));
+                correspondingCartItem.classList.add('focused');
+                console.log('Focused cart item:', correspondingCartItem);
+                const newAmount = incrementCartItem(itemName, quantityToAdd);
+                // Update the quantity-control amount field
+                const quantityControlAmountElement = document.querySelector('.quantity-control .amount');
+                if (quantityControlAmountElement) {
+                    quantityControlAmountElement.setAttribute('amount', newAmount);
+                    quantityControlAmountElement.textContent = newAmount;
+                    console.log('Updated quantity control amount:', newAmount);
                 }
+                updateCustomizationPanel(itemName, parseInt(correspondingCartItem.querySelector('[data-cart-amount]').getAttribute('amount'), 10));
+                updateCartItemPrice(itemName);
+                showSelectedItemCustomization(itemName);
+                selectedItemName = itemName;
+                console.log('Selected item name set to:', selectedItemName);
+                // Restore the tab state for the selected item
+                handleItemSelection(itemName);
             }
-            const cartItems = document.querySelectorAll('.cart-list .cart-item');
-            cartItems.forEach(item => item.classList.remove('focused'));
-            correspondingCartItem.classList.add('focused');
-            console.log('Focused cart item:', correspondingCartItem);
-            const newAmount = incrementCartItem(itemName, quantityToAdd);
-            // Update the quantity-control amount field
-            const quantityControlAmountElement = document.querySelector('.quantity-control .amount');
-            if (quantityControlAmountElement) {
-                quantityControlAmountElement.setAttribute('amount', newAmount);
-                quantityControlAmountElement.textContent = newAmount;
-                console.log('Updated quantity control amount:', newAmount);
-            }
-            updateCustomizationPanel(itemName, parseInt(correspondingCartItem.querySelector('[data-cart-amount]').getAttribute('amount'), 10));
-            updateCartItemPrice(itemName);
-            showSelectedItemCustomization(itemName);
-            selectedItemName = itemName;
-            console.log('Selected item name set to:', selectedItemName);
-            // Restore the tab state for the selected item
-            handleItemSelection(itemName);
         }
     }, 300); // Adjust the debounce wait time as needed
 
@@ -1263,13 +1277,11 @@ function switchTab(tabIndex) {
     
     // Function to handle drink selection click
     function handleDrinkSelectionClick(event) {
-        const panelDrinkItem = event.target.closest('#panel-drink-item');
+        const panelDrinkItem = event.target.closest('.menu-item');
         if (!panelDrinkItem) return;
-    
-        const drinkName = panelDrinkItem.getAttribute('drink-name');
-        const drinkId = panelDrinkItem.getAttribute('data-drink-name');
+        const drinkName = panelDrinkItem.getAttribute('data-name');
+        const drinkId = panelDrinkItem.getAttribute('data-drink-id');
         const drinkImageSrc = panelDrinkItem.querySelector('.menu-item-image').src;
-    
         if (!drinkName || !drinkImageSrc || !drinkId) return;
     
         const correspondingCartItem = document.querySelector(`.cart-item[data-cart-item="${selectedItemName}"]`);
@@ -1281,6 +1293,60 @@ function switchTab(tabIndex) {
             drinkSelectionElement.style.display = 'none';
             console.log('Hid drink-selection element for item:', selectedItemName);
         }
+    
+        // Display the meal-drink element
+        const mealDrinkElement = correspondingCartItem.querySelector('#meal-drink');
+        if (mealDrinkElement) {
+            mealDrinkElement.style.display = 'flex';
+            console.log('Displayed meal-drink element for item:', selectedItemName);
+        }
+    
+        // Update the meal-drink-item text in the cart item
+        const mealDrinkItemElement = correspondingCartItem.querySelector('#meal-drink-item');
+        if (mealDrinkItemElement) {
+            mealDrinkItemElement.innerText = drinkName;
+            mealDrinkItemElement.setAttribute('data-meal-drink-title', drinkName);
+            console.log('Updated meal-drink-item text to:', drinkName);
+        }
+    
+        // Store the selected drink name and ID as custom attributes
+        correspondingCartItem.setAttribute('data-selected-drink', drinkName);
+        correspondingCartItem.setAttribute('data-drink-id', drinkId);
+    
+        // Update the meal-drink-item text in the meal-review customization step
+        const mealReviewDrinkItemElement = document.querySelector(`.customization-content[data-cart-customization-content="${selectedItemName}"] #meal-item-drink .menu-item-name#meal-drink-item`);
+        if (mealReviewDrinkItemElement) {
+            mealReviewDrinkItemElement.innerText = drinkName;
+            console.log('Updated meal-review drink item text to:', drinkName);
+            // Force repaint
+            mealReviewDrinkItemElement.style.display = 'none';
+            mealReviewDrinkItemElement.offsetHeight; // Trigger reflow
+            mealReviewDrinkItemElement.style.display = 'block';
+        } else {
+            console.log('mealReviewDrinkItemElement not found');
+        }
+    
+        // Update the menu-item-image in the meal-review customization step
+        const mealReviewDrinkImageElement = document.querySelector(`.customization-content[data-cart-customization-content="${selectedItemName}"] #meal-item-drink .menu-item-image`);
+        if (mealReviewDrinkImageElement) {
+            mealReviewDrinkImageElement.src = drinkImageSrc;
+            console.log('Updated meal-review drink item image to:', drinkImageSrc);
+        } else {
+            console.log('mealReviewDrinkImageElement not found');
+        }
+    
+        const mealReviewDrinkItem = document.querySelector(`.customization-content[data-cart-customization-content="${selectedItemName}"] #meal-item-drink`);
+        if (mealReviewDrinkItem) {
+            mealReviewDrinkItem.setAttribute('data-selected-drink', drinkName);
+            mealReviewDrinkItem.setAttribute('data-drink-id', drinkId);
+        } else {
+            console.log('mealReviewDrinkItem not found');
+        }
+    
+        // Switch to the meal-review tab
+        switchTab(2);
+        updateSizeAfterMeal(correspondingCartItem, mealReviewDrinkItemElement);
+    }
     
         // Display the meal-drink element
         const mealDrinkElement = correspondingCartItem.querySelector('#meal-drink');
