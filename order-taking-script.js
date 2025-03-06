@@ -1348,99 +1348,43 @@ function switchTab(tabIndex) {
         updateSizeAfterMeal(correspondingCartItem, mealReviewDrinkItemElement);
     }
     
-        // Display the meal-drink element
-        const mealDrinkElement = correspondingCartItem.querySelector('#meal-drink');
-        if (mealDrinkElement) {
-            mealDrinkElement.style.display = 'flex';
-            console.log('Displayed meal-drink element for item:', selectedItemName);
-        }
-    
-        // Update the meal-drink-item text in the cart item
-        const mealDrinkItemElement = correspondingCartItem.querySelector('#meal-drink-item');
-        if (mealDrinkItemElement) {
-            mealDrinkItemElement.innerText = drinkName;
-            mealDrinkItemElement.setAttribute('data-meal-drink-title', drinkName);
-            console.log('Updated meal-drink-item text to:', drinkName);
-        }
-    
-        // Store the selected drink name and ID as custom attributes
-        correspondingCartItem.setAttribute('data-selected-drink', drinkName);
-        correspondingCartItem.setAttribute('data-drink-id', drinkId);
-    
-        // Update the meal-drink-item text in the meal-review customization step
-        const mealReviewDrinkItemElement = document.querySelector(`.customization-content[data-cart-customization-content="${selectedItemName}"] #meal-item-drink .menu-item-name#meal-drink-item`);
-        if (mealReviewDrinkItemElement) {
-            mealReviewDrinkItemElement.innerText = drinkName;
-            console.log('Updated meal-review drink item text to:', drinkName);
-    
-            // Force repaint
-            mealReviewDrinkItemElement.style.display = 'none';
-            mealReviewDrinkItemElement.offsetHeight; // Trigger reflow
-            mealReviewDrinkItemElement.style.display = 'block';
-        } else {
-            console.log('mealReviewDrinkItemElement not found');
-        }
-    
-        // Update the menu-item-image in the meal-review customization step
-        const mealReviewDrinkImageElement = document.querySelector(`.customization-content[data-cart-customization-content="${selectedItemName}"] #meal-item-drink .menu-item-image`);
-        if (mealReviewDrinkImageElement) {
-            mealReviewDrinkImageElement.src = drinkImageSrc;
-            console.log('Updated meal-review drink item image to:', drinkImageSrc);
-        } else {
-            console.log('mealReviewDrinkImageElement not found');
-        }
-
-        const mealReviewDrinkItem = document.querySelector(`.customization-content[data-cart-customization-content="${selectedItemName}"] #meal-item-drink`);
-        if (mealReviewDrinkItem) {
-            mealReviewDrinkItem.setAttribute('data-selected-drink', drinkName);
-            mealReviewDrinkItem.setAttribute('data-drink-id', drinkId);
-        } else {
-            console.log('mealReviewDrinkItem not found');
-        }
-        
-        // Switch to the meal-review tab
-        switchTab(2);
-        updateSizeAfterMeal(correspondingCartItem, mealReviewDrinkItemElement);
-    }
-
+    // Ensure the function is properly defined outside of the handleDrinkSelectionClick function
     function updateSizeAfterMeal(cartItem, drinkItem) {
         const size = cartItem.querySelector("#meal-side #meal-side-size").textContent;
         const cartDrink = cartItem.querySelector("#meal-drink #meal-drink-size");
-
+    
         if (cartDrink) {
             cartDrink.textContent = size;
             console.log("Updated drink meal size in cart to: ", size);
         }
-
+    
         const customCartItem = drinkItem.parentElement.parentElement.parentElement.parentElement.parentElement;
-
         const sideCustomItem = customCartItem.querySelector("#meal-item-side #meal-item-size");
         const drinkCustomItem = customCartItem.querySelector("#meal-item-drink #meal-item-size");
-
+    
         if (sideCustomItem) {
             sideCustomItem.textContent = size;
             console.log("Updated side size in custom cart to: ", size);
         }
-
+    
         if (drinkCustomItem) {
             drinkCustomItem.textContent = size;
-            console.log("updated drink size in custom cart to: ", size);
+            console.log("Updated drink size in custom cart to: ", size);
         }
-
-        const buttonElement = customCartItem.querySelectorAll(".size-control")
-
+    
+        const buttonElement = customCartItem.querySelectorAll(".size-control");
         if (size === 'M') {
             buttonElement.forEach((button) => {
                 const mediumButton = button.querySelector("#size-control-medium");
                 mediumButton.classList.add("focused");
-            })
+            });
         }
-
+    
         if (size === 'L') {
             buttonElement.forEach((button) => {
-                const LargeButton = button.querySelector("#size-control-large");
-                LargeButton.classList.add("focused");
-            })
+                const largeButton = button.querySelector("#size-control-large");
+                largeButton.classList.add("focused");
+            });
         }
     }
 
