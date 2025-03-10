@@ -613,6 +613,11 @@ function switchTab(tabIndex) {
         }
     }
 
+    // Helper function to check if an element is visible
+    function isElementVisible(element) {
+        return element && element.style.display !== 'none' && element.style.visibility !== 'hidden';
+    }
+
     // Function to handle menu item click
     const handleMenuItemClick = debounce(function(itemName) {
         console.log('handleMenuItemClick called with:', itemName);
@@ -620,6 +625,16 @@ function switchTab(tabIndex) {
         let quantityToAdd = preselectedQuantity ? parseInt(preselectedQuantity, 10) : 1;
         preselectedQuantity = ''; // Reset preselected quantity after adding to cart
         updatePreselectedQuantityDisplay();
+
+        const drinkSelectionElement = document.querySelector('#drink-selection');
+        const selectedCartItem = document.querySelector('.cart-item.focused');
+        const clickedMenuItem = document.querySelector(`.menu-item[data-name="${itemName}"]`);
+        const category = clickedMenuItem ? clickedMenuItem.getAttribute('data-category') : '';
+    
+        if (isElementVisible(drinkSelectionElement) && selectedCartItem && (category === 'Drinks' || category === 'McCafé')) {
+            handleDrinkSelectionClick({ target: clickedMenuItem });
+            return;
+        }
 
         if (correspondingCartItem && correspondingCartItem.style.display !== 'none') {
             // If the cart item is already visible, increment the amount
@@ -1263,9 +1278,15 @@ function switchTab(tabIndex) {
     
     // Function to handle drink selection click
     function handleDrinkSelectionClick(event) {
-        const panelDrinkItem = event.target.closest('#panel-drink-item');
-        if (!panelDrinkItem) return;
-    
+        let panelDrinkItem = event.target.closest('#panel-drink-item');
+        const drinkNameMenu = event.target.id;
+        const panelDrinkMenuItem = document.querySelector(`#panel-drink-item[data-drink-name="${drinkNameMenu}"]`);
+        
+        if (!panelDrinkItem && !panelDrinkMenuItem) return;
+        if(!panelDrinkItem){
+            panelDrinkItem = panelDrinkMenuItem;
+        }
+        
         const drinkName = panelDrinkItem.getAttribute('drink-name');
         const drinkId = panelDrinkItem.getAttribute('data-drink-name');
         const drinkImageSrc = panelDrinkItem.querySelector('.menu-item-image').src;
