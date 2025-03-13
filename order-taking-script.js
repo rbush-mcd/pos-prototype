@@ -1275,6 +1275,30 @@ function switchTab(tabIndex) {
         console.log('Updated description:', currentDescription);
         return currentDescription;
     }
+
+    // Add click event listeners to reset button
+    document.getElementById('reset-customizations').addEventListener('click', resetCustomizations);
+
+    // Function to reset item customization
+    function resetCustomizations() {
+        const cartItem = document.querySelector(`.cart-item[data-cart-item="${selectedItemName}"]`);
+        if (!cartItem) return;
+    
+        // Reset cart item description
+        const cartItemDescription = cartItem.querySelector('.order-item-description.is--cart-description');
+        if (cartItemDescription) {
+            cartItemDescription.textContent = '-';
+            cartItemDescription.style.display = 'none';
+        }
+    
+        // Reset meal item description
+        const mealItemDescription = document.querySelector(`.meal-item[data-name="${selectedItemName}"] .order-item-description`);
+        if (mealItemDescription) {
+            mealItemDescription.textContent = '-';
+        }
+    
+        console.log('Customizations reset for item:', selectedItemName);
+    }
     
     // Function to handle drink selection click
     function handleDrinkSelectionClick(event) {
