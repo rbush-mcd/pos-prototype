@@ -1280,24 +1280,30 @@ function switchTab(tabIndex) {
     document.getElementById('reset-customizations').addEventListener('click', resetCustomizations);
 
     // Function to reset item customization
-    function resetCustomizations() {
-        const cartItem = document.querySelector(`.cart-item[data-cart-item="${selectedItemName}"]`);
+    function resetCustomizations(event) {
+        var cartItem = event.currentTarget.getAttribute('data-cart-item');
+        if (!cartItem) {
+            cartItem = event.currentTarget.getAttribute('data-name');
+        }
         if (!cartItem) return;
     
+        const cartItemElement = document.querySelector(`.cart-item[data-cart-item="${cartItem}"]`);
+        if (!cartItemElement) return;
+    
         // Reset cart item description
-        const cartItemDescription = cartItem.querySelector('.order-item-description.is--cart-description');
+        const cartItemDescription = cartItemElement.querySelector('.order-item-description.is--cart-description');
         if (cartItemDescription) {
             cartItemDescription.textContent = '-';
             cartItemDescription.style.display = 'none';
         }
     
         // Reset meal item description
-        const mealItemDescription = document.querySelector(`.meal-item[data-name="${selectedItemName}"] .order-item-description`);
+        const mealItemDescription = document.querySelector(`.meal-item[data-name="${cartItem}"] .order-item-description`);
         if (mealItemDescription) {
             mealItemDescription.textContent = '-';
         }
     
-        console.log('Customizations reset for item:', selectedItemName);
+        console.log('Customizations reset for item:', cartItem);
     }
     
     // Function to handle drink selection click
