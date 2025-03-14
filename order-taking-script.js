@@ -1276,8 +1276,12 @@ function switchTab(tabIndex) {
         return currentDescription;
     }
 
-    // Add click event listeners to reset button
-    document.getElementById('reset-customizations').addEventListener('click', resetCustomizations);
+    // Event listener for the reset button
+    document.querySelectorAll('#reset-customizations').forEach(button => {
+        button.addEventListener('click', function(event) {
+            resetCustomizations(event);
+        });
+    });
 
     // Function to reset item customization
     function resetCustomizations(event) {
