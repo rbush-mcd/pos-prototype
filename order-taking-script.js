@@ -296,12 +296,14 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Close rewards modal
-    document.querySelectorAll('#enter-loyalty').addEventListener('click', function() {
-        const rewardsModal = document.getElementById('rewards-modal');
-        if (rewardsModal) {
-            rewardsModal.style.display = 'none';
-            console.log('Rewards modal hidden');
-        }
+    document.querySelectorAll('#enter-loyalty').forEach(function(element) {
+        element.addEventListener('click', function() {
+            const rewardsModal = document.getElementById('rewards-modal');
+            if (rewardsModal) {
+                rewardsModal.style.display = 'none';
+                console.log('Rewards modal hidden');
+            }
+        });
     });
     
     document.querySelectorAll('.mobile-order').forEach(function(element) {
