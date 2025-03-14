@@ -296,7 +296,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Close rewards modal
-    document.getElementById('enter-loyalty').addEventListener('click', function() {
+    document.querySelectorAll('#enter-loyalty').addEventListener('click', function() {
         const rewardsModal = document.getElementById('rewards-modal');
         if (rewardsModal) {
             rewardsModal.style.display = 'none';
