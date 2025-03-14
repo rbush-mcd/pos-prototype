@@ -286,6 +286,34 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Open rewards modal
+    document.getElementById('rewards-button').addEventListener('click', function() {
+        const rewardsModal = document.getElementById('rewards-modal');
+        if (rewardsModal) {
+            rewardsModal.style.display = 'flex';
+            console.log('Rewards modal displayed');
+        }
+    });
+
+    // Close rewards modal
+    document.getElementById('enter-loyalty').addEventListener('click', function() {
+        const rewardsModal = document.getElementById('rewards-modal');
+        if (rewardsModal) {
+            rewardsModal.style.display = 'none';
+            console.log('Rewards modal hidden');
+        }
+    });
+    
+    document.querySelectorAll('.mobile-order').forEach(function(element) {
+        element.addEventListener('click', function() {
+            const rewardsModal = document.getElementById('rewards-modal');
+            if (rewardsModal) {
+                rewardsModal.style.display = 'none';
+                console.log('Rewards modal hidden');
+            }
+        });
+    });
+
     // Function to update the cart tax
     function updateCartTax(subtotal) {
         const taxRate = 0.10; // 10% tax rate
