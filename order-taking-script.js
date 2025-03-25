@@ -268,6 +268,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const subtotalElements = document.querySelectorAll('#cart-subtotal');
             subtotalElements.forEach(subtotalElement => {
                 subtotalElement.textContent = subtotal.toFixed(2);
+            });
         }
     
         // Update the cart tax based on the new subtotal
