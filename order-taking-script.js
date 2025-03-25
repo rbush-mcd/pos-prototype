@@ -265,12 +265,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     
-        const subtotalElements = document.querySelectorAll('#cart-subtotal');
-            subtotalElements.forEach(subtotalElement => {
+        const subtotalElement = document.getElementById('cart-subtotal');
+            if (subtotalElement) {
                 subtotalElement.textContent = subtotal.toFixed(2);
-            });
-        }
-    
+            }
+        
         // Update the cart tax based on the new subtotal
         updateCartTax(subtotal);
     
