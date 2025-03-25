@@ -265,9 +265,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     
-        const subtotalElement = document.getElementById('cart-subtotal');
-        if (subtotalElement) {
-            subtotalElement.textContent = subtotal.toFixed(2);
+        const subtotalElements = document.querySelectorAll('#cart-subtotal');
+            subtotalElements.forEach(subtotalElement => {
+                subtotalElement.textContent = subtotal.toFixed(2);
         }
     
         // Update the cart tax based on the new subtotal
@@ -368,7 +368,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (customizationPanel) {
             customizationPanel.style.display = 'flex';
             updateMenuListGrid(true);
-            updateCartCustomizationsWidth(true);
             hideAllCustomizationContents();
             const correspondingCustomizationContentTab1 = document.querySelector(`.customization-list .customization-content[data-cart-customization-content="${itemName}"]`);
             const correspondingCustomizationContentTab2 = document.querySelector(`#drink-selection .customization-list .customization-content[data-cart-customization-content="${itemName}"]`);
@@ -1644,6 +1643,11 @@ function switchTab(tabIndex) {
             switchTab(2);
         }
 
+    });
+
+    // Event listener to close cashier page
+    document.getElementById('close-cashier').addEventListener('click', function() {
+        location.reload();
     });
 
     // Ensure content is fully loaded before attaching event listeners
