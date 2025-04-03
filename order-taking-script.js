@@ -1645,6 +1645,101 @@ function switchTab(tabIndex) {
 
     });
 
+    // Function to handle Confirm Order display
+    document.getElementById('confirm-order-button').addEventListener('click', function() {
+      
+        // Update all .cart-item elements to be unselected
+        document.querySelectorAll('.cart-item').forEach(item => {
+            item.classList.remove('focused');
+        });
+    
+        // Hide the element with the class .menu-wrap
+        const menuWrap = document.querySelector('.menu-wrap');
+        if (menuWrap) {
+            menuWrap.style.display = 'none';
+        }
+    
+        // Hide the element with the class .customization-panel
+        const customizationPanel = document.querySelector('.customization-panel');
+        if (customizationPanel) {
+            customizationPanel.style.display = 'none';
+        }
+    
+        // Update the width of the element .cart-customizations based on screen width
+        const cartCustomizations = document.querySelector('.cart-customizations');
+        if (cartCustomizations) {
+            const screenWidth = window.innerWidth;
+            if (screenWidth >= 1920) {
+                cartCustomizations.style.width = '352px';
+            } else {
+                cartCustomizations.style.width = '200px';
+            }
+        }
+    
+        // Show the element with the class .cashier-wrap in Flex
+        const cashierWrap = document.querySelector('.cashier-wrap');
+        if (cashierWrap) {
+            cashierWrap.style.display = 'flex';
+        }
+    
+        // Hide the button element with the id #confirm-order-button
+        const confirmOrderButton = document.getElementById('confirm-order-button');
+        if (confirmOrderButton) {
+            confirmOrderButton.style.display = 'none';
+        }
+    
+        // Display the button element with the id #submit-order-button
+        const submitOrderButton = document.getElementById('submit-order-button');
+        if (submitOrderButton) {
+            submitOrderButton.style.display = 'flex';
+        }
+    });
+
+    // Function to handle Edit Order click
+    document.getElementById('edit-order').addEventListener('click', function() {
+
+        // Show the element with the class .menu-wrap
+        const menuWrap = document.querySelector('.menu-wrap');
+        if (menuWrap) {
+            menuWrap.style.display = 'flex';
+        }
+    
+        // Show the element with the class .customization-panel
+        const customizationPanel = document.querySelector('.customization-panel');
+        if (customizationPanel) {
+            customizationPanel.style.display = 'flex';
+        }
+    
+        // Update the width of the element .cart-customizations based on screen width
+        const cartCustomizations = document.querySelector('.cart-customizations');
+        if (cartCustomizations) {
+            const screenWidth = window.innerWidth;
+            if (screenWidth >= 1920) {
+                cartCustomizations.style.width = '752px';
+            } else {
+                cartCustomizations.style.width = '448px';
+            }
+        }
+    
+        // Hide the element with the class .cashier-wrap
+        const cashierWrap = document.querySelector('.cashier-wrap');
+        if (cashierWrap) {
+            cashierWrap.style.display = 'none';
+        }
+    
+        // Show the button element with the id #confirm-order-button
+        const confirmOrderButton = document.getElementById('confirm-order-button');
+        if (confirmOrderButton) {
+            confirmOrderButton.style.display = 'flex';
+        }
+    
+        // Hide the button element with the id #submit-order-button
+        const submitOrderButton = document.getElementById('submit-order-button');
+        if (submitOrderButton) {
+            submitOrderButton.style.display = 'none';
+        }
+    });
+
     // Event listener to close cashier page
     document.getElementById('close-cashier').addEventListener('click', function() {
         location.reload();
