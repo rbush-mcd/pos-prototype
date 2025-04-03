@@ -1670,9 +1670,9 @@ function switchTab(tabIndex) {
         if (cartCustomizations) {
             const screenWidth = window.innerWidth;
             if (screenWidth >= 1920) {
-                cartCustomizations.style.width = '352px';
+                cartCustomizations.style.minWidth = '352px';
             } else {
-                cartCustomizations.style.width = '200px';
+                cartCustomizations.style.minWidth = '200px';
             }
         }
     
@@ -1715,9 +1715,9 @@ function switchTab(tabIndex) {
         if (cartCustomizations) {
             const screenWidth = window.innerWidth;
             if (screenWidth >= 1920) {
-                cartCustomizations.style.width = '752px';
+                cartCustomizations.style.minWidth = '752px';
             } else {
-                cartCustomizations.style.width = '448px';
+                cartCustomizations.style.minWidth = '448px';
             }
         }
     
