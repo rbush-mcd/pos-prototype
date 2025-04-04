@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM fully loaded and parsed');
 
-    var longTimeout = 50; // long timeout for more complex operations
+    var longTimeout = 500; // long timeout for more complex operations
     var shortimeout = 250; // short timeout for simple operations
     var firstClick = true;
 
