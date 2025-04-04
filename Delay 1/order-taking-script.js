@@ -1,8 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM fully loaded and parsed');
 
-    var confirmOrderTimeout = 2500; // 'Confirm Order' button timeout
-    var menuItemTimeout = 200; // Menu item timeout
+    var longTimeout = 50; // long timeout for more complex operations
+    var shortimeout = 250; // short timeout for simple operations
+    var firstClick = true;
 
     function delay(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -161,7 +162,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Function to increment the amount of cart items by a specific quantity
-    function incrementCartItem(itemName, quantity = 1) {
+    async function incrementCartItem(itemName, quantity = 1) {
+
+        await delay(shortimeout);
         const correspondingCartItem = document.querySelector(`.cart-list .cart-item[data-cart-item="${itemName}"]`);
         if (correspondingCartItem) {
             const amountElement = correspondingCartItem.querySelector('[data-cart-amount]');
@@ -186,7 +189,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Function to decrement the amount of cart items
-    function decrementCartItem(itemName) {
+    async function decrementCartItem(itemName) {
+        await delay(shortimeout);
+
         const correspondingCartItem = document.querySelector(`.cart-list .cart-item[data-cart-item="${itemName}"]`);
         if (correspondingCartItem) {
             const amountElement = correspondingCartItem.querySelector('[data-cart-amount]');
@@ -294,7 +299,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Open rewards modal
-    document.getElementById('rewards-button').addEventListener('click', function() {
+    document.getElementById('rewards-button').addEventListener('click', async function() {
+        await delay(longTimeout);
         const rewardsModal = document.getElementById('rewards-modal');
         if (rewardsModal) {
             rewardsModal.style.display = 'flex';
@@ -304,7 +310,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Close rewards modal
     document.querySelectorAll('#enter-loyalty').forEach(function(element) {
-        element.addEventListener('click', function() {
+        element.addEventListener('click', async function() {
+            await delay(longTimeout);
             const rewardsModal = document.getElementById('rewards-modal');
             if (rewardsModal) {
                 rewardsModal.style.display = 'none';
@@ -522,7 +529,7 @@ function switchTab(tabIndex) {
     }
 }
 
-    function makeItAMeal(event) {
+    async function makeItAMeal(event) {
         var cartItem = event.currentTarget.getAttribute('data-cart-item');
         if(!cartItem) {
             cartItem = event.currentTarget.getAttribute('data-name');
@@ -540,6 +547,7 @@ function switchTab(tabIndex) {
         }
         
             console.log(`"make-meal" button clicked for item: ${cartItem}`);
+            await delay(shortimeout);
 
             // Get the current amount of the item
             const correspondingCartItem = document.querySelector(`.cart-list .cart-item[data-cart-item="${cartItem}"]`);
@@ -657,7 +665,13 @@ function switchTab(tabIndex) {
     // Function to handle menu item click
     const handleMenuItemClick = debounce(async function(itemName) {
         console.log('handleMenuItemClick called with:', itemName);
-        await delay(menuItemTimeout); // Wait for certain time before executing the function
+
+        if(firstClick){
+            await delay(longTimeout);
+            firstClick = false;
+        } else {
+            await delay(shortimeout);
+        }
 
         let correspondingCartItem = document.querySelector(`.cart-item[data-cart-item="${itemName}"]`);
         let quantityToAdd = preselectedQuantity ? parseInt(preselectedQuantity, 10) : 1;
@@ -826,7 +840,9 @@ function switchTab(tabIndex) {
     }
 
     // Function to handle quantity number click
-    function handleQuantityNumberClick(event) {
+    async function handleQuantityNumberClick(event) {
+
+        await delay(shortimeout); // Wait for certain time before executing the function
         const target = event.target.closest('.quantity-number');
         if (!target) {
             console.error('Quantity number element not found.');
@@ -1063,7 +1079,9 @@ function switchTab(tabIndex) {
     }
 
     // Function to handle customization ingredient click
-    function handleCustomizationIngredientClick(event) {
+    async function handleCustomizationIngredientClick(event) {
+
+        await delay(shortimeout); // Wait for certain time before executing the function
         const target = event.target.closest('.customization-ingredient');
         if (!target) return;
     
@@ -1349,7 +1367,10 @@ function switchTab(tabIndex) {
     }
     
     // Function to handle drink selection click
-    function handleDrinkSelectionClick(event) {
+    async function handleDrinkSelectionClick(event) {
+
+        await delay(shortimeout); // Wait for certain time before executing the function
+
         let panelDrinkItem = event.target.closest('#panel-drink-item');
         const drinkNameMenu = event.target.id;
         const panelDrinkMenuItem = document.querySelector(`#panel-drink-item[data-drink-name="${drinkNameMenu}"]`);
@@ -1525,7 +1546,9 @@ function switchTab(tabIndex) {
     }
 
     // Function to remove the selected item from the cart and reset customizations
-    function removeSelectedItem() {
+    async function removeSelectedItem() {
+
+        await delay(shortimeout); // Wait for certain time before executing the function
         if (!selectedItemName) {
             console.log('No selected item to remove');
             return;
@@ -1657,7 +1680,7 @@ function switchTab(tabIndex) {
     // Function to handle Confirm Order display
     document.getElementById('confirm-order-button').addEventListener('click', async function() {
       
-        await delay(confirmOrderTimeout); // Wait for 3 seconds before executing the next line
+        await delay(longTimeout); // Wait for long timeout before executing the code
 
         // Update all .cart-item elements to be unselected
         document.querySelectorAll('.cart-item').forEach(item => {
