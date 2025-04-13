@@ -321,7 +321,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     document.querySelectorAll('.mobile-order').forEach(function(element) {
-        element.addEventListener('click', function() {
+        element.addEventListener('click', async function() {
+            await delay(longTimeout);
             const rewardsModal = document.getElementById('rewards-modal');
             if (rewardsModal) {
                 rewardsModal.style.display = 'none';
@@ -1000,7 +1001,9 @@ function switchTab(tabIndex) {
     }
 
     // Function to handle size control button click
-    function handleSizeControlClick(event) {
+    async function handleSizeControlClick(event) {
+
+        await delay(shortimeout); // Wait for certain time before executing the function
         const sizeControlButton = event.target;
         const size = sizeControlButton.getAttribute('data-size');
         var customizationContent = sizeControlButton.closest('.customization-content');
@@ -1515,7 +1518,7 @@ function switchTab(tabIndex) {
     }
 
     // Function to handle item content click within #meal-item-drink
-    function handleItemContentClick(event) {
+    async function handleItemContentClick(event) {
         const itemContent = event.currentTarget;
 
         //detect side or drink
@@ -1526,6 +1529,7 @@ function switchTab(tabIndex) {
 
         const drink = itemContent.closest('#meal-item-drink.meal-item');
         if(drink) {
+            await delay(shortimeout); // Wait for certain time before executing the function
             const itemName = drink.getAttribute('data-name');
             const drinkId = drink.getAttribute('data-drink-id');
             console.log(`Item content clicked: ${itemName}, Drink ID: ${drinkId}`);
@@ -1660,7 +1664,7 @@ function switchTab(tabIndex) {
     }
 
     // Event delegation for dynamically added items
-    document.addEventListener('click', function(event) {
+    document.addEventListener('click',async  function(event) {
         if (event.target.closest('.customization-ingredient')) {
             handleCustomizationIngredientClick(event);
         }
@@ -1668,6 +1672,7 @@ function switchTab(tabIndex) {
             removeSelectedItem();
         }
         if (event.target.textContent === 'Submit Order') {
+            await delay(longTimeout); // Wait for long timeout before executing the code
             location.reload();
             console.log("Order submitted!");
         }
@@ -1732,7 +1737,7 @@ function switchTab(tabIndex) {
     });
 
     // Function to handle Edit Order click
-    document.getElementById('edit-order').addEventListener('click', function() {
+    document.getElementById('edit-order').addEventListener('click',function() {
 
         // Show the element with the class .menu-wrap
         const menuWrap = document.querySelector('.menu-wrap');
