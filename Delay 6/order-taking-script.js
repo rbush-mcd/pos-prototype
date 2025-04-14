@@ -75,6 +75,25 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedItemName = null;
     let preselectedQuantity = '';
 
+    // Define timer variables
+    let timerStarted = false;
+    let timerInterval;
+    
+    // Function to start the timer
+    function startTimer() {
+        let seconds = 0;
+        const timerElement = document.getElementById('order-timer');
+        if (!timerElement) {
+            console.error('Element with ID "order-timer" not found.');
+            return;
+        }
+    
+        timerInterval = setInterval(() => {
+            seconds++;
+            timerElement.textContent = seconds;
+        }, 1000);
+    }
+
     // Function to hide all cart items initially
     function hideAllCartItems() {
         const cartItems = document.querySelectorAll('.cart-list .cart-item');
@@ -746,7 +765,13 @@ function switchTab(tabIndex) {
             // Restore the tab state for the selected item
             handleItemSelection(itemName);
         }
-    }, 300); // Adjust the debounce wait time as needed
+        
+        // Start the timer if it hasn't started yet
+            if (!timerStarted) {
+                startTimer();
+                timerStarted = true;
+            }
+        }, 300); // Adjust the debounce wait time as needed
 
     // Add click event listener to each menu item and remove button
     function addClickListeners() {
