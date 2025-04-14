@@ -75,6 +75,10 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedItemName = null;
     let preselectedQuantity = '';
 
+     // Define timer variables
+     let timerStarted = false;
+     let timerInterval;
+
     // Function to start the timer
     function startTimer() {
         let seconds = 0;
